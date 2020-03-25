@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar
 }));
 
-const DrawerComponent = () => {
+function DrawerComponent() {
   const { drawer, toolbar } = useStyles();
   return(
     <Drawer className={drawer} variant="permanent" anchor="left">
