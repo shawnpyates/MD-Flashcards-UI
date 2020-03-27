@@ -11,6 +11,7 @@ import { GitHub } from '@material-ui/icons';
 const StyledAppBar = styled(AppBar)`
   background-color: #060;
   z-index: 5000;
+  height: 60px;
 `;
 
 const StyledButton = styled(Button)`
