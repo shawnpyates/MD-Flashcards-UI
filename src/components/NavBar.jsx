@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 // import { makeStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Link from '@material-ui/core/Link';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+
+import {
+  AppBar,
+  Button,
+  Link,
+  Toolbar,
+  Typography,
+} from '@material-ui/core';
 import { GitHub } from '@material-ui/icons';
+
+import { UserContext } from '../context/userContext';
 
 const StyledAppBar = styled(AppBar)`
   background-color: #060;
@@ -38,6 +43,12 @@ const StyledGitHubIcon = styled(GitHub)`
 
 
 function NavBar() {
+  const { currentUser } = useContext(UserContext);
+  const { endpoint, buttonContent } = (
+    currentUser
+      ? { endpoint: '/signout', buttonContent: 'Sign Out' }
+      : { endpoint: '/github', buttonContent: <><StyledGitHubIcon />Login with Github</> }
+  )
   return(
     <StyledAppBar position="static">
       <Toolbar>
@@ -45,8 +56,8 @@ function NavBar() {
           MD Flashcards
         </Typography>
         <StyledButton>
-          <Link href="http://localhost:4000/auth/github">
-            <StyledGitHubIcon />Login with Github
+          <Link href={`http://localhost:4000/auth${endpoint}`}>
+            {buttonContent}
           </Link>
         </StyledButton>
       </Toolbar>

@@ -23,11 +23,15 @@ const GroupContainer = styled(TableContainer)`
 
 const HeadTableCell = styled(TableCell)`
   font-weight: 700;
-`
+`;
+
+const StyledRow = styled(TableRow)`
+  cursor: pointer;
+`;
 
 const formatDate = date => dayjs(date).format('YYYY/MM/DD');
 
-const getCardSetTable = (sets) => (
+const getCardSetTable = (sets, setId) => (
   <Table>
     <TableHead>
       <HeadTableCell>Name</HeadTableCell>
@@ -36,11 +40,11 @@ const getCardSetTable = (sets) => (
     </TableHead>
     <TableBody>
       {sets.map(({ id, name, inserted_at, updated_at }) => (
-        <TableRow key={id}>
+        <StyledRow key={id} onClick={() => setId(id)}>
           <TableCell>{name}</TableCell>
           <TableCell>{formatDate(inserted_at)}</TableCell>
           <TableCell>{formatDate(updated_at)}</TableCell>
-        </TableRow>
+        </StyledRow>
       ))}
     </TableBody>
   </Table>

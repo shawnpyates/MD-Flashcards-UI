@@ -8,6 +8,7 @@ import NavBar from './components/NavBar';
 import Drawer from './components/DrawerComponent';
 import Welcome from './components/Welcome';
 import CardGroup from './containers/CardGroup';
+import CardSet from './containers/CardSet';
 
 import { UserProvider } from './context/userContext';
 
@@ -32,15 +33,18 @@ function App() {
   return (
     <div className={root}>
       <Router>
-        <NavBar />
-        <Drawer />
         <UserProvider currentUser={currentUser}>
+          <NavBar />
+          <Drawer />
           <Switch>
             <Route path="/" exact>
               {currentUser ? <Main /> : <Welcome />}
             </Route>
             <Route path="/groups/:id" exact>
               <CardGroup />
+            </Route>
+            <Route path="/sets/:id" exact>
+              <CardSet />
             </Route>
           </Switch>
         </UserProvider>
