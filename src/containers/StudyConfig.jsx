@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import styled from 'styled-components';
 import { CardSetContext } from '../context/cardSetContext';
+import dayjs from 'dayjs';
 
 const orderOptions = {
   ASCENDING: 'ascending',
@@ -51,7 +52,7 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
+const capitalize = str => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 
 const renderOptions = (options) => Object.values(options).map((option) => (
   <FormControlLabel key={option} value={option} control={<Radio />} label={capitalize(option)} />
@@ -64,32 +65,37 @@ const shuffleCards = ([...cards]) => {
     [cards[cardsLength], cards[i]] = [cards[i], cards[cardsLength]];
   }
   return cards;
-}
+};
+
+const sortCards = ([...cards], n) => (
+  cards.sort((a, b) => (dayjs(a).isAfter(dayjs(b)) ? -n : n))
+) ;
 
 
 function StudyConfig() {
-  const { currentSetName, setCurrentMode, cards, setCards } = useContext(CardSetContext);
+  const { setCurrentMode, currentSet, setCurrentSet } = useContext(CardSetContext);
   const [state, setState] = useState({
     order: orderOptions.ASCENDING,
     displayFirst: displayFirstOptions.QUESTION,
   });
 
+
   const handleChange = ({ target: { name, value } }) => {
     setState({ ...state, [name]: value });
   };
 
-  const sortCards = (order) => {
+
+  const reorderCards = (order) => {
     switch (order) {
       case orderOptions.ASCENDING:
-        console.log('asc', [...cards].sort((a, b) => a.inserted_at - b.inserted_at));
-        setCards([...cards].sort((a, b) => a.inserted_at - b.inserted_at));
+        setCurrentSet({ ...currentSet, cards: sortCards(currentSet.cards, 1) });
         break;
       case orderOptions.DESCENDING:
-        console.log('desc', [...cards].sort((a, b) => b.inserted_at - a.inserted_at));
-        setCards([...cards].sort((a, b) => b.inserted_at - a.inserted_at));
+        debugger;
+        setCurrentSet({ ...currentSet, cards: sortCards(currentSet.cards, -1) });
         break;
       case orderOptions.RANDOM:
-        setCards(shuffleCards(cards));
+        setCurrentSet({ ...currentSet, cards: shuffleCards(currentSet.cards) });
         break;
       default:
         return;
@@ -98,9 +104,9 @@ function StudyConfig() {
 
   const handleButtonClick = (mode) => {
     if (mode === cardSetModes.STUDY) {
-      sortCards(state.order);
+      reorderCards(state.order);
     }
-    setCurrentMode(cardSetModes[mode]);
+    setCurrentMode(mode);
   }
 
   const getButton = (mode, text) => (
@@ -110,7 +116,7 @@ function StudyConfig() {
 
   return (
     <ConfigContainer>
-      <h2>Get ready to study {currentSetName}!</h2>
+      <h2>Get ready to study {currentSet && currentSet.name}!</h2>
       <FormControl component="fieldset">
         <FormLabel component="legend">Which order should the cards appear in?</FormLabel>
         <StyledRadioGroup

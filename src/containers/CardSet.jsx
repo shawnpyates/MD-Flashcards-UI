@@ -71,8 +71,7 @@ const getCardSetTable = (sets) => (
 
 function CardSet() {
   const { id: setId } = useParams();
-  // TODO: decide whether or not to split name from cards for state management
-  const [{ name, cards }, setCurrentSet] = useState({});
+  const [currentSet, setCurrentSet] = useState({});
   const [mode, setMode] = useState(cardSetModes.VIEW);
   const [displayFirst, setDisplayFirst] = useState(displayFirstOptions.QUESTION);
   useEffect(() => {
@@ -90,9 +89,8 @@ function CardSet() {
     <CardSetProvider
       currentMode={mode}
       setCurrentMode={setMode}
-      currentSetName={name}
-      cards={cards}
-      // setCards={setCards}
+      currentSet={currentSet}
+      setCurrentSet={setCurrentSet}
       displayFirst={displayFirst}
       setDisplayFirst={setDisplayFirst}
     >
@@ -101,16 +99,16 @@ function CardSet() {
       {![cardSetModes.CONFIG, cardSetModes.STUDY].includes(mode)
       && (
         <SetContainer>
-          <h4>Card Set: {name ? name : 'None'}</h4>
+          <h4>Card Set: {currentSet ? currentSet.name : 'None'}</h4>
           <div>
             {getButton('CONFIG', 'Start Studying')}
             {getButton('ADD', 'Add More Cards')}
             {getButton('EDIT', 'Edit Cards')}
           </div>
           {(
-            cards && cards.length
-              ? getCardSetTable(cards)
-              : `${name} currently contains no cards.`
+            currentSet && currentSet.cards && currentSet.cards.length
+              ? getCardSetTable(currentSet.cards)
+              : `${currentSet.name} currently contains no cards.`
           )}
         </SetContainer>
       )}

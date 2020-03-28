@@ -4,14 +4,13 @@ export const CardSetContext = createContext();
 
 export const CardSetProvider = ({
   children,
-  currentSetName,
+  currentSet,
   currentMode,
   setCurrentMode,
-  cards,
-  setCards,
+  setCurrentSet,
 }) => (
   <CardSetContext.Provider
-    value={{ currentSetName, currentMode, setCurrentMode, cards, setCards }}
+    value={{ currentSet, currentMode, setCurrentMode, setCurrentSet }}
   >
     {children}
   </CardSetContext.Provider>
