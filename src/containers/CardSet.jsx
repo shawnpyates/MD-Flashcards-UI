@@ -84,7 +84,8 @@ function CardSet() {
   }, [setId]);
   const getButton = (mode, text) => (
     <StyledButton onClick={() => setMode(cardSetModes[mode])}>{text}</StyledButton>
-  );  
+  );
+  console.log('CS: ', currentSet);
   return (
     <CardSetProvider
       currentMode={mode}

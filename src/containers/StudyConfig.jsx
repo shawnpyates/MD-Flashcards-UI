@@ -68,12 +68,12 @@ const shuffleCards = ([...cards]) => {
 };
 
 const sortCards = ([...cards], n) => (
-  cards.sort((a, b) => (dayjs(a).isAfter(dayjs(b)) ? -n : n))
-) ;
+  cards.sort((a, b) => (dayjs(a.inserted_at).isAfter(dayjs(b.inserted_at)) ? n : -n))
+);
 
 
 function StudyConfig() {
-  const { setCurrentMode, currentSet, setCurrentSet } = useContext(CardSetContext);
+  const { setCurrentMode, currentSet, setCurrentSet, setDisplayFirst } = useContext(CardSetContext);
   const [state, setState] = useState({
     order: orderOptions.ASCENDING,
     displayFirst: displayFirstOptions.QUESTION,
@@ -91,7 +91,6 @@ function StudyConfig() {
         setCurrentSet({ ...currentSet, cards: sortCards(currentSet.cards, 1) });
         break;
       case orderOptions.DESCENDING:
-        debugger;
         setCurrentSet({ ...currentSet, cards: sortCards(currentSet.cards, -1) });
         break;
       case orderOptions.RANDOM:
@@ -105,6 +104,7 @@ function StudyConfig() {
   const handleButtonClick = (mode) => {
     if (mode === cardSetModes.STUDY) {
       reorderCards(state.order);
+      setDisplayFirst(state.displayFirst);
     }
     setCurrentMode(mode);
   }
