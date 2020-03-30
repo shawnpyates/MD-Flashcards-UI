@@ -12,23 +12,12 @@ import styled from 'styled-components';
 import { CardSetContext } from '../context/cardSetContext';
 import dayjs from 'dayjs';
 
+import { actionTypes, cardSetModes, displayFirstOptions } from '../reducers/cardSetReducer';
+
 const orderOptions = {
   ASCENDING: 'ascending',
   DESCENDING: 'descending',
   RANDOM: 'random',
-};
-
-const displayFirstOptions = {
-  QUESTION: 'question',
-  ANSWER: 'answer',
-};
-
-const cardSetModes = {
-  VIEW: 'view',
-  ADD: 'add',
-  EDIT: 'edit',
-  CONFIG: 'config', 
-  STUDY: 'study',
 };
 
 const ConfigContainer = styled(Container)`
@@ -73,29 +62,24 @@ const sortCards = ([...cards], n) => (
 
 
 function StudyConfig() {
-  const { setCurrentMode, currentSet, setCurrentSet, setDisplayFirst } = useContext(CardSetContext);
-  const [state, setState] = useState({
+  const { currentCards, originalSet, dispatch } = useContext(CardSetContext);
+  const [formState, setFormState] = useState({
     order: orderOptions.ASCENDING,
     displayFirst: displayFirstOptions.QUESTION,
   });
 
-
   const handleChange = ({ target: { name, value } }) => {
-    setState({ ...state, [name]: value });
+    setFormState({ ...formState, [name]: value });
   };
-
 
   const reorderCards = (order) => {
     switch (order) {
       case orderOptions.ASCENDING:
-        setCurrentSet({ ...currentSet, cards: sortCards(currentSet.cards, 1) });
-        break;
+        return sortCards(currentCards, 1);
       case orderOptions.DESCENDING:
-        setCurrentSet({ ...currentSet, cards: sortCards(currentSet.cards, -1) });
-        break;
+        return sortCards(currentCards, -1);
       case orderOptions.RANDOM:
-        setCurrentSet({ ...currentSet, cards: shuffleCards(currentSet.cards) });
-        break;
+        return shuffleCards(currentCards);
       default:
         return;
     }
@@ -103,26 +87,33 @@ function StudyConfig() {
 
   const handleButtonClick = (mode) => {
     if (mode === cardSetModes.STUDY) {
-      reorderCards(state.order);
-      setDisplayFirst(state.displayFirst);
+      dispatch({
+        type: actionTypes.SET_STUDY_SESSION_CONFIG,
+        payload: {
+          mode,
+          displayFirst: formState.displayFirst,
+          currentCards: reorderCards(formState.order),
+        },
+      });
+      return;
     }
-    setCurrentMode(mode);
+    dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
   }
 
   const getButton = (mode, text) => (
-    <StyledButton onClick={() => handleButtonClick(cardSetModes[mode])}>{text}</StyledButton>
+    <StyledButton onClick={() => handleButtonClick(mode)}>{text}</StyledButton>
   );
 
 
   return (
     <ConfigContainer>
-      <h2>Get ready to study {currentSet && currentSet.name}!</h2>
+      <h2>Get ready to study {originalSet.name}!</h2>
       <FormControl component="fieldset">
         <FormLabel component="legend">Which order should the cards appear in?</FormLabel>
         <StyledRadioGroup
           aria-label="displayOrder"
           name="order"
-          value={state.order}
+          value={formState.order}
           onChange={handleChange}
         >
           {renderOptions(orderOptions)}
@@ -131,15 +122,15 @@ function StudyConfig() {
         <StyledRadioGroup
           aria-label="displayFirst"
           name="displayFirst"
-          value={state.displayFirst}
+          value={formState.displayFirst}
           onChange={handleChange}
         >
           {renderOptions(displayFirstOptions)}
         </StyledRadioGroup>
       </FormControl>
       <div>
-        {getButton('STUDY', 'Start!')}
-        {getButton('VIEW', 'Go Back to Card List')}
+        {getButton(cardSetModes.STUDY, 'Start!')}
+        {getButton(cardSetModes.VIEW, 'Go Back to Card List')}
       </div>
     </ConfigContainer>
   );

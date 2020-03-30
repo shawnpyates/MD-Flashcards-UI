@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Button,
@@ -15,19 +15,12 @@ import StudyConfig from './StudyConfig';
 import StudySession from './StudySession';
 
 import { CardSetProvider } from '../context/cardSetContext';
-
-const cardSetModes = {
-  VIEW: 'view',
-  ADD: 'add',
-  EDIT: 'edit',
-  CONFIG: 'config', 
-  STUDY: 'study',
-};
-
-const displayFirstOptions = {
-  QUESTION: 'question',
-  ANSWER: 'answer',
-};
+import {
+  actionTypes,
+  cardSetModes,
+  cardSetReducer,
+  initialState,
+} from '../reducers/cardSetReducer';
 
 const SetContainer = styled(TableContainer)`
   width: 70%;
@@ -71,50 +64,62 @@ const getCardSetTable = (sets) => (
 
 function CardSet() {
   const { id: setId } = useParams();
-  const [currentSet, setCurrentSet] = useState({});
-  const [mode, setMode] = useState(cardSetModes.VIEW);
-  const [displayFirst, setDisplayFirst] = useState(displayFirstOptions.QUESTION);
+  const [
+    {
+      currentCards,
+      displayFirst,
+      mode: currentMode,
+      originalSet,
+    },
+    dispatch,
+  ] = useReducer(cardSetReducer, initialState);
+
   useEffect(() => {
     fetch(`http://localhost:4000/api/card_sets/${setId}`, { credentials: 'include' })
-    .then(res => res.json())
-    .then(({ data }) => {
-      console.log('SET: ', data);
-      setCurrentSet(data);
-    })
+      .then(res => res.json())
+      .then(({ data }) => {
+        dispatch({ type: actionTypes.SET_ORIGINAL, payload: data });
+      })
   }, [setId]);
+
   const getButton = (mode, text) => (
-    <StyledButton onClick={() => setMode(cardSetModes[mode])}>{text}</StyledButton>
+    <StyledButton 
+      onClick={() => {
+        dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
+      }}
+    >
+      {text}
+    </StyledButton>
   );
-  console.log('CS: ', currentSet);
+
   return (
     <CardSetProvider
-      currentMode={mode}
-      setCurrentMode={setMode}
-      currentSet={currentSet}
-      setCurrentSet={setCurrentSet}
+      currentCards={currentCards}
+      currentMode={currentMode}
       displayFirst={displayFirst}
-      setDisplayFirst={setDisplayFirst}
+      originalSet={originalSet}
+      dispatch={dispatch}
     >
-      {mode === cardSetModes.CONFIG && <StudyConfig />}
-      {mode === cardSetModes.STUDY && <StudySession />}
-      {![cardSetModes.CONFIG, cardSetModes.STUDY].includes(mode)
+      {currentMode === cardSetModes.CONFIG && <StudyConfig />}
+      {currentMode === cardSetModes.STUDY && <StudySession />}
+      {![cardSetModes.CONFIG, cardSetModes.STUDY].includes(currentMode)
       && (
         <SetContainer>
-          <h4>Card Set: {currentSet ? currentSet.name : 'None'}</h4>
+          <h4>Card Set: {originalSet ? originalSet.name : 'None'}</h4>
           <div>
-            {getButton('CONFIG', 'Start Studying')}
-            {getButton('ADD', 'Add More Cards')}
-            {getButton('EDIT', 'Edit Cards')}
+            {getButton(cardSetModes.CONFIG, 'Start Studying')}
+            {getButton(cardSetModes.ADD, 'Add More Cards')}
+            {getButton(cardSetModes.EDIT, 'Edit Cards')}
           </div>
           {(
-            currentSet && currentSet.cards && currentSet.cards.length
-              ? getCardSetTable(currentSet.cards)
-              : `${currentSet.name} currently contains no cards.`
+            currentCards && currentCards.length
+              ? getCardSetTable(currentCards)
+              : `${originalSet.name} currently contains no cards.`
           )}
         </SetContainer>
       )}
     </CardSetProvider>
-  )
+  );
 }
 
 export default CardSet;
