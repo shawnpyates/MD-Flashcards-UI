@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
-// import { makeStyles } from '@material-ui/core/styles'
 
 import {
   AppBar,
@@ -47,9 +46,16 @@ function NavBar() {
   const { endpoint, buttonContent } = (
     currentUser
       ? { endpoint: '/signout', buttonContent: 'Sign Out' }
-      : { endpoint: '/github', buttonContent: <><StyledGitHubIcon />Login with Github</> }
-  )
-  return(
+      : {
+        endpoint: '/github',
+        buttonContent:
+        <>
+          <StyledGitHubIcon />
+          Login with Github
+        </>,
+      }
+  );
+  return (
     <StyledAppBar position="static">
       <Toolbar>
         <Typography variant="h5" color="inherit">
@@ -62,7 +68,7 @@ function NavBar() {
         </StyledButton>
       </Toolbar>
     </StyledAppBar>
-  )
+  );
 }
 
 export default NavBar;

@@ -30,7 +30,7 @@ const QuestionContentContainer = styled.div`
   min-height: 40px;
   border: 1px solid #F0F0F0;
   vertical-align: top;
-  background-color: ${props => props.isShaded ? '#F0F0F0' : '#FFF'};
+  background-color: ${(props) => (props.isShaded ? '#F0F0F0' : '#FFF')};
 `;
 
 const StyledActionsContainer = styled(CardActions)`
@@ -43,7 +43,7 @@ const ActionButton = styled(Button)`
   background-color: #F0F0F0;
   color: #000;
   margin-top: 25px;
-  ${props => props.side}: 50px;
+  ${(props) => props.side}: 50px;
 `;
 
 const FlipButton = styled(Button)`
@@ -94,20 +94,20 @@ function StudySession() {
   const currentCard = allCards[localState.cardIndex];
 
   useEffect(() => {
-    setLocalState({ cardIndex: 0, currentSide: displayFirst});
+    setLocalState({ cardIndex: 0, currentSide: displayFirst });
   }, [displayFirst]);
 
   const flipCard = () => {
     setLocalState({
       ...localState,
-      currentSide: cardSides.find(card => card !== localState.currentSide),
-    })
+      currentSide: cardSides.find((card) => card !== localState.currentSide),
+    });
   };
   const handleChevClick = (direction) => {
     setLocalState({
       currentSide: displayFirst,
       cardIndex: localState.cardIndex + (direction === 'right' ? 1 : -1),
-    })
+    });
   };
   const repeatCardAtEnd = () => {
     dispatch({ type: actionTypes.UPDATE_CARDS, payload: [...allCards, currentCard] });

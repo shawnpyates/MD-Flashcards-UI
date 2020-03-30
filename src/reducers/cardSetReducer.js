@@ -7,7 +7,7 @@ export const cardSetModes = {
   VIEW: 'view',
   ADD: 'add',
   EDIT: 'edit',
-  CONFIG: 'config', 
+  CONFIG: 'config',
   STUDY: 'study',
 };
 
@@ -44,7 +44,7 @@ export const cardSetReducer = (state, { type, payload }) => {
       return {
         ...state,
         currentCards: payload,
-      }
+      };
     }
     case actionTypes.SET_STUDY_SESSION_CONFIG: {
       const { mode, displayFirst, currentCards } = payload;

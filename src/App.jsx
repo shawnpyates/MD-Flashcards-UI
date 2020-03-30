@@ -14,7 +14,7 @@ import { UserProvider } from './context/userContext';
 
 const useStyles = makeStyles(() => ({
   root: {
-    display: 'flex'
+    display: 'flex',
   },
 }));
 
@@ -24,12 +24,11 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   useEffect(() => {
     fetch('http://localhost:4000/api/current_user', { credentials: 'include' })
-    .then(res => res.json())
-    .then(({ data }) => {
-      console.log('USER: ', data);
-      setCurrentUser(data);
-    })
-  }, [])
+      .then((res) => res.json())
+      .then(({ data }) => {
+        setCurrentUser(data);
+      });
+  }, []);
   return (
     <div className={root}>
       <Router>

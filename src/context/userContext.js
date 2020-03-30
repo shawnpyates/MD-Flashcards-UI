@@ -1,4 +1,5 @@
-import React, { createContext } from "react";
+/* eslint react/prop-types: 0 */
+import React, { createContext } from 'react';
 
 export const UserContext = createContext();
 

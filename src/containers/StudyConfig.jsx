@@ -9,10 +9,10 @@ import {
   RadioGroup,
 } from '@material-ui/core';
 import styled from 'styled-components';
-import { CardSetContext } from '../context/cardSetContext';
 import dayjs from 'dayjs';
 
 import { actionTypes, cardSetModes, displayFirstOptions } from '../reducers/cardSetReducer';
+import { CardSetContext } from '../context/cardSetContext';
 
 const orderOptions = {
   ASCENDING: 'ascending',
@@ -41,19 +41,20 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const capitalize = str => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+const capitalize = (str) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 
 const renderOptions = (options) => Object.values(options).map((option) => (
   <FormControlLabel key={option} value={option} control={<Radio />} label={capitalize(option)} />
 ));
 
-const shuffleCards = ([...cards]) => {
-  let cardsLength = cards.length;
+const shuffleCards = (cards) => {
+  const clonedCards = [...cards];
+  let cardsLength = clonedCards.length;
   while (cardsLength) {
-    const i = Math.floor(Math.random() * cardsLength--);
-    [cards[cardsLength], cards[i]] = [cards[i], cards[cardsLength]];
+    const i = Math.floor(Math.random() * (cardsLength -= 1));
+    [clonedCards[cardsLength], clonedCards[i]] = [clonedCards[i], clonedCards[cardsLength]];
   }
-  return cards;
+  return clonedCards;
 };
 
 const sortCards = ([...cards], n) => (
@@ -81,7 +82,7 @@ function StudyConfig() {
       case orderOptions.RANDOM:
         return shuffleCards(currentCards);
       default:
-        return;
+        return null;
     }
   };
 
@@ -98,7 +99,7 @@ function StudyConfig() {
       return;
     }
     dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
-  }
+  };
 
   const getButton = (mode, text) => (
     <StyledButton onClick={() => handleButtonClick(mode)}>{text}</StyledButton>
@@ -107,7 +108,11 @@ function StudyConfig() {
 
   return (
     <ConfigContainer>
-      <h2>Get ready to study {originalSet.name}!</h2>
+      <h2>
+        Get ready to study
+        {originalSet.name}
+        !
+      </h2>
       <FormControl component="fieldset">
         <FormLabel component="legend">Which order should the cards appear in?</FormLabel>
         <StyledRadioGroup

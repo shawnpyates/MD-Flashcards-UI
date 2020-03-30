@@ -1,5 +1,5 @@
 import React from 'react';
-import Container from '@material-ui/core/Container'
+import Container from '@material-ui/core/Container';
 import styled from 'styled-components';
 
 const WelcomeContainer = styled(Container)`
@@ -16,7 +16,7 @@ function Welcome() {
     <WelcomeContainer>
       Welcome to MD Flashcards!
     </WelcomeContainer>
-  )
+  );
 }
 
 export default Welcome;

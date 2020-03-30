@@ -8,7 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@material-ui/core'
+} from '@material-ui/core';
 import styled from 'styled-components';
 
 import StudyConfig from './StudyConfig';
@@ -42,7 +42,7 @@ const StyledButton = styled(Button)`
 const HeadTableCell = styled(TableCell)`
   font-weight: 700;
   text-transform: uppercase;
-`
+`;
 
 const getCardSetTable = (sets) => (
   <Table>
@@ -59,7 +59,7 @@ const getCardSetTable = (sets) => (
       ))}
     </TableBody>
   </Table>
-)
+);
 
 
 function CardSet() {
@@ -76,14 +76,14 @@ function CardSet() {
 
   useEffect(() => {
     fetch(`http://localhost:4000/api/card_sets/${setId}`, { credentials: 'include' })
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(({ data }) => {
         dispatch({ type: actionTypes.SET_ORIGINAL, payload: data });
-      })
+      });
   }, [setId]);
 
   const getButton = (mode, text) => (
-    <StyledButton 
+    <StyledButton
       onClick={() => {
         dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
       }}
@@ -105,7 +105,10 @@ function CardSet() {
       {![cardSetModes.CONFIG, cardSetModes.STUDY].includes(currentMode)
       && (
         <SetContainer>
-          <h4>Card Set: {originalSet ? originalSet.name : 'None'}</h4>
+          <h4>
+            Card Set:
+            {originalSet ? originalSet.name : 'None'}
+          </h4>
           <div>
             {getButton(cardSetModes.CONFIG, 'Start Studying')}
             {getButton(cardSetModes.ADD, 'Add More Cards')}
