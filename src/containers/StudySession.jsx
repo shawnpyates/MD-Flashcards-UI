@@ -8,12 +8,18 @@ import {
 } from '@material-ui/core';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import styled from 'styled-components';
+import ReactMarkdown from 'react-markdown';
 
-import { actionTypes, cardSetModes } from '../reducers/cardSetReducer';
+import {
+  actionTypes,
+  cardSetModes,
+  displayFirstOptions as cardSides,
+} from '../reducers/cardSetReducer';
 import { CardSetContext } from '../context/cardSetContext';
+import CodeBlock from '../components/CodeBlock';
 
 const StudyCard = styled(Card)`
-  width: 40%;
+  width: 60%;
   min-height: 150px;
   position: absolute;
   top: 100px;
@@ -25,11 +31,12 @@ const StudyCard = styled(Card)`
 
 const QuestionContentContainer = styled.div`
   margin: auto 30px;
-  display: inline-block;
+  display: inline-table;
   width: 70%;
   min-height: 40px;
   border: 1px solid #F0F0F0;
   vertical-align: top;
+  padding: 5px;
   background-color: ${(props) => (props.isShaded ? '#F0F0F0' : '#FFF')};
 `;
 
@@ -56,14 +63,21 @@ const FlipButton = styled(Button)`
   }
 `;
 
+const QuestionContent = styled(Typography)`
+  vertical-align: middle;
+  display: table-cell;
+`;
+
+const CHEV_SIZE = '60px';
+
 const ChevContainer = styled.div`
-  width: 40px;
+  width: ${CHEV_SIZE};
   display: inline-block;
   vertical-align: top;
 `;
 
 const CHEV_STYLES_MIXIN = `
-  font-size: 40px;
+  font-size: ${CHEV_SIZE};
   cursor: pointer;
   color: #060;
 `;
@@ -75,8 +89,6 @@ const StyledLeftChev = styled(ChevronLeft)`
 const StyledRightChev = styled(ChevronRight)`
   ${CHEV_STYLES_MIXIN}
 `;
-
-const cardSides = ['question', 'answer'];
 
 function StudySession() {
   const {
@@ -95,12 +107,16 @@ function StudySession() {
 
   useEffect(() => {
     setLocalState({ cardIndex: 0, currentSide: displayFirst });
+
+    return () => {
+      dispatch({ type: actionTypes.UPDATE_CARDS, payload: originalSet.cards });
+    };
   }, [displayFirst]);
 
   const flipCard = () => {
     setLocalState({
       ...localState,
-      currentSide: cardSides.find((card) => card !== localState.currentSide),
+      currentSide: Object.values(cardSides).find((side) => side !== localState.currentSide),
     });
   };
   const handleChevClick = (direction) => {
@@ -116,7 +132,9 @@ function StudySession() {
   return (
     <StudyCard>
       <CardContent>
-        <h4>{originalSet.name}</h4>
+        <h4>
+          {`${originalSet.name}: Question ${localState.cardIndex + 1}/${allCards.length}`}
+        </h4>
         <div>
           <ChevContainer>
             {localState.cardIndex !== 0
@@ -129,9 +147,12 @@ function StudySession() {
             )}
           </ChevContainer>
           <QuestionContentContainer isShaded={localState.currentSide === 'answer'}>
-            <Typography variant="body2" component="p">
-              {currentCard && currentCard[localState.currentSide]}
-            </Typography>
+            <QuestionContent variant="body2" component="p">
+              <ReactMarkdown
+                source={currentCard && currentCard[localState.currentSide]}
+                renderers={{ code: CodeBlock }}
+              />
+            </QuestionContent>
           </QuestionContentContainer>
           <ChevContainer>
             {localState.cardIndex !== allCards.length - 1

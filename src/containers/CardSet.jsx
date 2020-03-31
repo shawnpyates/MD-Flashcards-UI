@@ -1,4 +1,6 @@
-import React, { useEffect, useReducer } from 'react';
+import React, {
+  useEffect, useReducer, useRef, useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Button,
@@ -8,6 +10,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextareaAutosize,
 } from '@material-ui/core';
 import styled from 'styled-components';
 
@@ -19,7 +22,7 @@ import {
   actionTypes,
   cardSetModes,
   cardSetReducer,
-  initialState,
+  initialState as initialCardSetState,
 } from '../reducers/cardSetReducer';
 
 const SetContainer = styled(TableContainer)`
@@ -32,11 +35,24 @@ const SetContainer = styled(TableContainer)`
 const StyledButton = styled(Button)`
   background-color: #060;
   color: #FFF;
-  margin-right: 25px;
+  ${((props) => (
+    props.addrow
+      ? 'position: fixed; margin-left: 10px;'
+      : 'margin-right: 25px;'
+  ))}
 
   &:hover {
     background-color: #070;
   }
+`;
+
+const TableCellForButton = styled(TableCell)`
+  padding: 0;
+`;
+
+const AddRowDiv = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const HeadTableCell = styled(TableCell)`
@@ -44,23 +60,17 @@ const HeadTableCell = styled(TableCell)`
   text-transform: uppercase;
 `;
 
-const getCardSetTable = (sets) => (
-  <Table>
-    <TableHead>
-      <HeadTableCell>Question</HeadTableCell>
-      <HeadTableCell>Answer</HeadTableCell>
-    </TableHead>
-    <TableBody>
-      {sets.map(({ id, question, answer }) => (
-        <TableRow key={id}>
-          <TableCell>{question}</TableCell>
-          <TableCell>{answer}</TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-);
+const StyledTextarea = styled(TextareaAutosize)`
+  width: 100%;
+`;
 
+const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+};
 
 function CardSet() {
   const { id: setId } = useParams();
@@ -72,7 +82,9 @@ function CardSet() {
       originalSet,
     },
     dispatch,
-  ] = useReducer(cardSetReducer, initialState);
+  ] = useReducer(cardSetReducer, initialCardSetState);
+  const [additionalRows, setAdditionalRows] = useState(null);
+  const previousMode = usePrevious(currentMode);
 
   useEffect(() => {
     fetch(`http://localhost:4000/api/card_sets/${setId}`, { credentials: 'include' })
@@ -81,6 +93,67 @@ function CardSet() {
         dispatch({ type: actionTypes.SET_ORIGINAL, payload: data });
       });
   }, [setId]);
+
+  useEffect(() => {
+    if (currentMode === cardSetModes.ADD) {
+      setAdditionalRows([{ question: null, answer: null }]);
+    }
+    if (previousMode === cardSetModes.ADD) {
+      setAdditionalRows(null);
+    }
+  }, [currentMode]);
+
+  const handleTextareaChange = ({ target: { name, value } }, index) => {
+    const updatedRow = { ...additionalRows[index], [name]: value };
+    setAdditionalRows([
+      ...additionalRows.slice(0, index),
+      updatedRow,
+      ...additionalRows.slice(index + 1),
+    ]);
+  };
+
+  const getCardSetTable = () => (
+    <Table>
+      <TableHead>
+        <HeadTableCell>Question</HeadTableCell>
+        <HeadTableCell>Answer</HeadTableCell>
+      </TableHead>
+      <TableBody>
+        {additionalRows
+        && additionalRows.map((row, i) => (
+          <TableRow>
+            <TableCell>
+              <StyledTextarea
+                name="question"
+                value={additionalRows[i].question}
+                onChange={(ev) => handleTextareaChange(ev, i)}
+                rowsMin={3}
+              />
+            </TableCell>
+            <TableCell>
+              <StyledTextarea
+                name="answer"
+                value={additionalRows[i].answer}
+                onChange={(ev) => handleTextareaChange(ev, i)}
+                rowsMin={3}
+              />
+            </TableCell>
+            <TableCellForButton>
+              <AddRowDiv>
+                <StyledButton addrow>Add</StyledButton>
+              </AddRowDiv>
+            </TableCellForButton>
+          </TableRow>
+        ))}
+        {currentCards.map(({ id, question, answer }) => (
+          <TableRow key={id}>
+            <TableCell>{question}</TableCell>
+            <TableCell>{answer}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
 
   const getButton = (mode, text) => (
     <StyledButton
@@ -116,7 +189,7 @@ function CardSet() {
           </div>
           {(
             currentCards && currentCards.length
-              ? getCardSetTable(currentCards)
+              ? getCardSetTable()
               : `${originalSet.name} currently contains no cards.`
           )}
         </SetContainer>
