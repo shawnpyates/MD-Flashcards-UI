@@ -111,7 +111,7 @@ function StudySession() {
     return () => {
       dispatch({ type: actionTypes.UPDATE_CARDS, payload: originalSet.cards });
     };
-  }, [displayFirst]);
+  }, [displayFirst, dispatch, originalSet.cards]);
 
   const flipCard = () => {
     setLocalState({
