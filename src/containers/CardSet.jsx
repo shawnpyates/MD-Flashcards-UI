@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useReducer, useRef, useState,
+  useContext, useEffect, useReducer, useRef, useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -22,12 +22,21 @@ import StudySession from './StudySession';
 import CodeBlock from '../components/CodeBlock';
 
 import { CardSetProvider } from '../context/cardSetContext';
+import { UserContext } from '../context/userContext';
+
 import {
   actionTypes,
   cardSetModes,
   cardSetReducer,
   initialState as initialCardSetState,
 } from '../reducers/cardSetReducer';
+
+import {
+  getCardSet,
+  createNewCard,
+  editCard as editCardApiCall,
+  removeCard as removeCardApiCall,
+} from '../api';
 
 const SetContainer = styled(TableContainer)`
   width: 80%;
@@ -46,7 +55,7 @@ const StyledButton = styled(Button)`
   color: #FFF;
   ${((props) => (
     props.createrow
-      ? 'position: absolute; transform: translateY(50%);'
+      ? ''
       : 'margin-right: 25px;'
   ))}
 
@@ -65,15 +74,8 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const SideContent = styled.div`
-  display: inline;
-  position: relative;
+const SideContent = styled.td`
   margin-left: 20px;
-`;
-
-const AddRowTableCell = styled(TableCell)`
-  ${(props) => (props.islast && 'border-bottom: none; padding-bottom: 0;') || ''}
-  ${(props) => (props.reducepadding && 'padding: 5px;') || ''}
 `;
 
 const HeadTableCell = styled(TableCell)`
@@ -93,17 +95,22 @@ const SuccessIndicator = styled.span`
 
 const StyledDeleteIcon = styled(DeleteForever)`
   color: #F00;
-  position: absolute;
   cursor: pointer;
-  top: 50%;
 `;
 
 const ContentTableCell = styled(TableCell)`
   width: calc(100% / ${(props) => props.columnlength});
-  padding: 0 5px;
+  ${(props) => (props.islast && 'border-bottom: none;') || ''}
+  ${(props) => (props.fornewrowbutton && 'padding-bottom: 35px;') || ''}
+  padding: 0 5px auto;
   & pre > code {
     white-space: pre-wrap !important;
   }
+`;
+
+const EmptyDataIndicator = styled.div`
+  margin: 35px auto;
+  text-align: center;
 `;
 
 const getInitialNewRow = () => ({ question: null, answer: null, shortid: shortid.generate() });
@@ -127,16 +134,19 @@ function CardSet() {
     },
     dispatch,
   ] = useReducer(cardSetReducer, initialCardSetState);
+
+  const { currentUser } = useContext(UserContext);
+  const isSetFromCurrentUser = currentUser && (originalSet.creator_id === currentUser.id);
+
   const [temporaryRows, setTemporaryRows] = useState(null);
   const [displayMessage, setDisplayMessage] = useState(null);
   const previousMode = usePrevious(currentMode);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/card_sets/${setId}`, { credentials: 'include' })
-      .then((res) => res.json())
-      .then(({ data }) => {
-        dispatch({ type: actionTypes.SET_ORIGINAL, payload: data });
-        if (!data.cards.length) {
+    getCardSet({ id: setId })
+      .then((set) => {
+        dispatch({ type: actionTypes.SET_ORIGINAL, payload: set });
+        if (!set.cards.length) {
           dispatch({ type: actionTypes.UPDATE_MODE, payload: cardSetModes.ADD });
         }
       });
@@ -181,18 +191,9 @@ function CardSet() {
   };
 
   const addNewCard = ({ question, answer, index }) => {
-    fetch(
-      'http://localhost:4000/api/cards',
-      {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        method: 'POST',
-        body: JSON.stringify({ card: { question, answer, card_set_id: originalSet.id } }),
-      },
-    )
-      .then((res) => res.json())
-      .then(({ data }) => {
-        dispatch({ type: actionTypes.UPDATE_CARDS, payload: [...currentCards, data] });
+    createNewCard({ question, answer, cardSetId: originalSet.id })
+      .then((card) => {
+        dispatch({ type: actionTypes.UPDATE_CARDS, payload: [...currentCards, card] });
         setTemporaryRows(
           temporaryRows.length > 1
             ? [
@@ -205,27 +206,19 @@ function CardSet() {
   };
 
   const editCard = ({ question, answer, id }) => {
-    fetch(
-      `http://localhost:4000/api/cards/${id}`,
-      {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        method: 'PUT',
-        body: JSON.stringify({ card: { question, answer, card_set_id: originalSet.id } }),
-      },
-    )
-      .then((res) => res.json())
-      .then(({ data }) => {
-        dispatch({ type: actionTypes.UPDATE_CARDS, payload: data });
+    editCardApiCall({
+      id, question, answer, cardSetId: originalSet.id,
+    })
+      .then((updatedCards) => {
+        dispatch({ type: actionTypes.UPDATE_CARDS, payload: updatedCards });
         setDisplayMessage('Successfully edited card!');
       });
   };
 
   const removeCard = (id) => {
-    fetch(`http://localhost:4000/api/cards/${id}`, { credentials: 'include', method: 'DELETE' })
-      .then((res) => res.json())
-      .then(({ data }) => {
-        dispatch({ type: actionTypes.UPDATE_CARDS, payload: data });
+    removeCardApiCall({ id })
+      .then((remainingCards) => {
+        dispatch({ type: actionTypes.UPDATE_CARDS, payload: remainingCards });
         setDisplayMessage('Successfully deleted card!');
       });
   };
@@ -243,7 +236,10 @@ function CardSet() {
               <ReactMarkdown source={answer} renderers={{ code: CodeBlock }} />
             </ContentTableCell>
             <SideContent>
-              <StyledDeleteIcon onClick={() => removeCard(id)} />
+              {isSetFromCurrentUser
+              && (
+                <StyledDeleteIcon onClick={() => removeCard(id)} />
+              )}
             </SideContent>
           </>
         )}
@@ -284,22 +280,22 @@ function CardSet() {
           return (
             <>
               <TableRow key={id || key}>
-                <AddRowTableCell islast={isLast}>
+                <ContentTableCell columnlength={2} islast={isLast}>
                   <StyledTextarea
                     name="question"
                     value={question}
                     onChange={(ev) => handleTextareaChange(ev, i)}
                     rowsMin={3}
                   />
-                </AddRowTableCell>
-                <AddRowTableCell islast={isLast}>
+                </ContentTableCell>
+                <ContentTableCell columnlength={2} islast={isLast}>
                   <StyledTextarea
                     name="answer"
                     value={answer}
                     onChange={(ev) => handleTextareaChange(ev, i)}
                     rowsMin={3}
                   />
-                </AddRowTableCell>
+                </ContentTableCell>
                 <SideContent>
                   <StyledButton
                     createrow
@@ -317,10 +313,10 @@ function CardSet() {
               {shouldDisplayNewRowButton
               && (
                 <TableRow key="addnew">
-                  <AddRowTableCell reducepadding>
+                  <ContentTableCell columnlength={2} fornewrowbutton>
                     <StyledButton addnewrow onClick={addNewRow}>+ New Row</StyledButton>
-                  </AddRowTableCell>
-                  <AddRowTableCell reducepadding />
+                  </ContentTableCell>
+                  <ContentTableCell columnlength={2} />
                 </TableRow>
               )}
             </>
@@ -362,16 +358,23 @@ function CardSet() {
             && (
               <>
                 {getButton(cardSetModes.CONFIG, 'Start Studying')}
-                {getButton(cardSetModes.ADD, 'Add More Cards')}
-                {getButton(cardSetModes.EDIT, 'Edit Cards')}
-                <SuccessIndicator>{displayMessage || ''}</SuccessIndicator>
+                {isSetFromCurrentUser
+                && (
+                  <>
+                    {getButton(cardSetModes.ADD, 'Add More Cards')}
+                    {getButton(cardSetModes.EDIT, 'Edit Cards')}
+                    <SuccessIndicator>{displayMessage || ''}</SuccessIndicator>
+                  </>
+                )}
               </>
             )) || ''}
           </div>
           {getCardSetTable()}
           {(currentCards && !currentCards.length
           && (
-            `${originalSet.name} currently contains no cards. Create some cards above to get started!`
+            <EmptyDataIndicator>
+              {`${originalSet.name} currently contains no cards. Create some cards above to get started!`}
+            </EmptyDataIndicator>
           )) || ''}
         </SetContainer>
       )}

@@ -15,6 +15,8 @@ import { Redirect } from 'react-router-dom';
 
 import { UserContext } from '../context/userContext';
 
+import { createNewCardGroup } from '../api';
+
 const MainContainer = styled(TableContainer)`
   width: 70%;
   position: absolute;
@@ -96,18 +98,9 @@ function Main() {
   };
 
   const createNewGroup = () => {
-    fetch(
-      'http://localhost:4000/api/card_groups',
-      {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        method: 'POST',
-        body: JSON.stringify({ card_group: { name: newGroupName, user_id: userId } }),
-      },
-    )
-      .then((res) => res.json())
-      .then(({ data }) => {
-        setGroupIdForRedirect(data.id);
+    createNewCardGroup({ name: newGroupName, userId })
+      .then((group) => {
+        setGroupIdForRedirect(group.id);
       });
   };
 

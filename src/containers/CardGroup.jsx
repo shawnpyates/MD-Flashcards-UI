@@ -13,6 +13,8 @@ import {
 import styled from 'styled-components';
 import dayjs from 'dayjs';
 
+import { getCardGroup, createNewCardSet } from '../api';
+
 const GroupContainer = styled(TableContainer)`
   width: 70%;
   position: absolute;
@@ -61,20 +63,22 @@ const ContentTableCell = styled(TableCell)`
 
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
 
-const getCardSetTable = (sets, setId) => (
+const getCardSetTable = (sets, setId, isLibrary) => (
   <Table>
     <TableHead>
       <HeadTableCell>Name</HeadTableCell>
-      <HeadTableCell>Created</HeadTableCell>
+      <HeadTableCell>{isLibrary ? 'Creator Name' : 'Created'}</HeadTableCell>
       <HeadTableCell>Number of Cards</HeadTableCell>
     </TableHead>
     <TableBody>
       {sets.map(({
-        id, name, inserted_at: insertedAt, card_length: numberOfCards,
+        id, name, inserted_at: insertedAt, card_length: numberOfCards, creator_name: creatorName,
       }) => (
         <StyledRow key={id} onClick={() => setId(id)}>
           <ContentTableCell columnlength={3}>{name}</ContentTableCell>
-          <ContentTableCell columnlength={3}>{formatDate(insertedAt)}</ContentTableCell>
+          <ContentTableCell columnlength={3}>
+            {isLibrary ? creatorName : formatDate(insertedAt)}
+          </ContentTableCell>
           <ContentTableCell columnlength={3}>{numberOfCards}</ContentTableCell>
         </StyledRow>
       ))}
@@ -88,37 +92,39 @@ function CardGroup() {
   const [cardSetIdForRedirect, setCardSetIdForRedirect] = useState(null);
   const [newSetName, setNewSetName] = useState(null);
 
+  // if no groupId, render all sets from DB (for library mode)
+  const fetchEndpoint = (
+    groupId
+      ? `/card_groups/${groupId}`
+      : '/card_sets'
+  );
+
   useEffect(() => {
-    fetch(`http://localhost:4000/api/card_groups/${groupId}`, { credentials: 'include' })
-      .then((res) => res.json())
-      .then(({ data }) => {
-        setCurrentGroup(data);
+    getCardGroup({ endpoint: fetchEndpoint })
+      .then((group) => {
+        setCurrentGroup(groupId ? group : { card_sets: group });
       });
-  }, [groupId]);
+  }, [groupId, fetchEndpoint]);
 
   const handleChange = ({ target: { value } }) => {
     setNewSetName(value);
   };
 
   const createNewSet = () => {
-    fetch(
-      'http://localhost:4000/api/card_sets',
-      {
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        method: 'POST',
-        body: JSON.stringify({ card_set: { name: newSetName, card_group_id: groupId } }),
-      },
-    )
-      .then((res) => res.json())
-      .then(({ data }) => {
-        setCardSetIdForRedirect(data.id);
+    createNewCardSet({ name: newSetName, groupId })
+      .then((set) => {
+        setCardSetIdForRedirect(set.id);
       });
   };
 
   if (cardSetIdForRedirect) {
     return <Redirect to={`/sets/${cardSetIdForRedirect}`} />;
   }
+
+  // if in library mode, don't show sets that contain no cards
+  const filterCardSets = (sets) => (
+    groupId ? sets : sets.filter((set) => !!set.card_length)
+  );
 
   return (
     <>
@@ -155,7 +161,7 @@ function CardGroup() {
         )}
         {(
           cardSets && cardSets.length
-            ? getCardSetTable(cardSets, setCardSetIdForRedirect)
+            ? getCardSetTable(filterCardSets(cardSets), setCardSetIdForRedirect, !groupId)
             : `${name} currently contains no card sets.`
         )}
       </GroupContainer>

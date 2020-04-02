@@ -21,7 +21,7 @@ const drawerItems = [
   },
   {
     text: 'Flashcard Library',
-    link: '/',
+    link: '/library',
   },
   {
     text: 'Settings',
@@ -41,8 +41,8 @@ function DrawerComponent() {
       <div className={toolbar} />
       <List>
         {drawerItems.map(({ text, link }) => (
-          <StyledLink to={link}>
-            <ListItem button key={text}>
+          <StyledLink to={link} key={text}>
+            <ListItem button>
               <ListItemText primary={text} />
             </ListItem>
           </StyledLink>
