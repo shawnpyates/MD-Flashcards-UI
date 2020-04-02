@@ -1,11 +1,13 @@
 import React, { useContext, useState } from 'react';
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from '@material-ui/core';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
@@ -28,23 +30,55 @@ const StyledRow = styled(TableRow)`
   cursor: pointer;
 `;
 
+const StyledButton = styled(Button)`
+  background-color: #060;
+  color: #FFF;
+
+  &:hover {
+    background-color: #070;
+  }
+
+  ${(props) => (
+    props.newgroup
+      ? 'transform: translateY(25%);'
+      : 'display: block;'
+  )}
+
+  &:disabled{ 
+    background-color: #F0F0F0;
+  }
+`;
+
+const NewGroupContainer = styled.div`
+  margin: 30px auto 5px;
+`;
+
+const StyledTextField = styled(TextField)`
+  margin-right: 25px;
+`;
+
+const ContentTableCell = styled(TableCell)`
+  width: calc(100% / ${(props) => props.columnlength})
+`;
+
+
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
 
-const getCardGroupTable = (groups, setId) => (
+const getCardGroupTable = (groups, setGroupId) => (
   <Table>
     <TableHead>
       <HeadTableCell>Name</HeadTableCell>
       <HeadTableCell>Created</HeadTableCell>
-      <HeadTableCell>Updated</HeadTableCell>
+      <HeadTableCell>Number of Card Sets</HeadTableCell>
     </TableHead>
     <TableBody>
       {groups.map(({
-        id, name, inserted_at: insertedAt, updated_at: updatedAt,
+        id, name, inserted_at: insertedAt, card_set_length: numberOfCardSets,
       }) => (
-        <StyledRow key={id} onClick={() => setId(id)}>
-          <TableCell>{name}</TableCell>
-          <TableCell>{formatDate(insertedAt)}</TableCell>
-          <TableCell>{formatDate(updatedAt)}</TableCell>
+        <StyledRow key={id} onClick={() => setGroupId(id)}>
+          <ContentTableCell columnlength={3}>{name}</ContentTableCell>
+          <ContentTableCell columnlength={3}>{formatDate(insertedAt)}</ContentTableCell>
+          <ContentTableCell columnlength={3}>{numberOfCardSets}</ContentTableCell>
         </StyledRow>
       ))}
     </TableBody>
@@ -52,22 +86,73 @@ const getCardGroupTable = (groups, setId) => (
 );
 
 function Main() {
-  const [clickedRowId, setClickedRowId] = useState(null);
-  const { currentUser: { card_groups: cardGroups, name } } = useContext(UserContext);
-  if (clickedRowId) {
-    return <Redirect to={`/groups/${clickedRowId}`} />;
+  const [groupIdForRedirect, setGroupIdForRedirect] = useState(null);
+  const [newGroupName, setNewGroupName] = useState(null);
+
+  const { currentUser: { card_groups: cardGroups, name, id: userId } } = useContext(UserContext);
+
+  const handleChange = ({ target: { value } }) => {
+    setNewGroupName(value);
+  };
+
+  const createNewGroup = () => {
+    fetch(
+      'http://localhost:4000/api/card_groups',
+      {
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        method: 'POST',
+        body: JSON.stringify({ card_group: { name: newGroupName, user_id: userId } }),
+      },
+    )
+      .then((res) => res.json())
+      .then(({ data }) => {
+        setGroupIdForRedirect(data.id);
+      });
+  };
+
+  if (groupIdForRedirect) {
+    return <Redirect to={`/groups/${groupIdForRedirect}`} />;
   }
+
   return (
     <>
       <MainContainer>
-        <h4>
+        <h3>
           {name}
           &apos;s Card Groups
-        </h4>
+        </h3>
+        <StyledButton
+          onClick={() => {
+            if (!newGroupName) {
+              setNewGroupName('');
+            }
+          }}
+        >
+          Add a New Group
+        </StyledButton>
+        {(newGroupName || newGroupName === '')
+        && (
+          <NewGroupContainer>
+            <StyledTextField
+              label="Name Your New Group"
+              variant="outlined"
+              value={newGroupName}
+              onChange={handleChange}
+            />
+            <StyledButton
+              newgroup
+              disabled={!newGroupName}
+              onClick={createNewGroup}
+            >
+              Create
+            </StyledButton>
+          </NewGroupContainer>
+        )}
         {(
           cardGroups.length
-            ? getCardGroupTable(cardGroups, setClickedRowId)
-            : 'You currently have no card groups.'
+            ? getCardGroupTable(cardGroups, setGroupIdForRedirect)
+            : 'You currently have no card groups. Create a group above to get started!'
         )}
       </MainContainer>
     </>

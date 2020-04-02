@@ -15,9 +15,11 @@ import {
 import styled from 'styled-components';
 import { DeleteForever } from '@material-ui/icons';
 import shortid from 'shortid';
+import ReactMarkdown from 'react-markdown';
 
 import StudyConfig from './StudyConfig';
 import StudySession from './StudySession';
+import CodeBlock from '../components/CodeBlock';
 
 import { CardSetProvider } from '../context/cardSetContext';
 import {
@@ -29,6 +31,7 @@ import {
 
 const SetContainer = styled(TableContainer)`
   width: 80%;
+  overflow: visible;
   position: absolute;
   top: 100px;
   left: 250px;
@@ -90,9 +93,17 @@ const SuccessIndicator = styled.span`
 
 const StyledDeleteIcon = styled(DeleteForever)`
   color: #F00;
-  transform: translateY(50%);
   position: absolute;
   cursor: pointer;
+  top: 50%;
+`;
+
+const ContentTableCell = styled(TableCell)`
+  width: calc(100% / ${(props) => props.columnlength});
+  padding: 0 5px;
+  & pre > code {
+    white-space: pre-wrap !important;
+  }
 `;
 
 const getInitialNewRow = () => ({ question: null, answer: null, shortid: shortid.generate() });
@@ -125,6 +136,9 @@ function CardSet() {
       .then((res) => res.json())
       .then(({ data }) => {
         dispatch({ type: actionTypes.SET_ORIGINAL, payload: data });
+        if (!data.cards.length) {
+          dispatch({ type: actionTypes.UPDATE_MODE, payload: cardSetModes.ADD });
+        }
       });
   }, [setId]);
 
@@ -216,6 +230,26 @@ function CardSet() {
       });
   };
 
+  const renderCurrentCards = (cards) => (
+    cards.map(({ id, question, answer }) => (
+      <TableRow key={id}>
+        {[cardSetModes.VIEW, cardSetModes.ADD].includes(currentMode)
+        && (
+          <>
+            <ContentTableCell columnlength={2}>
+              <ReactMarkdown source={question} renderers={{ code: CodeBlock }} />
+            </ContentTableCell>
+            <ContentTableCell columnlength={2}>
+              <ReactMarkdown source={answer} renderers={{ code: CodeBlock }} />
+            </ContentTableCell>
+            <SideContent>
+              <StyledDeleteIcon onClick={() => removeCard(id)} />
+            </SideContent>
+          </>
+        )}
+      </TableRow>
+    ))
+  );
 
   const getCardSetTable = () => (
     <SetTable>
@@ -246,6 +280,7 @@ function CardSet() {
             correspondingCard
             && (correspondingCard.question === question && correspondingCard.answer === answer)
           );
+
           return (
             <>
               <TableRow key={id || key}>
@@ -291,20 +326,7 @@ function CardSet() {
             </>
           );
         })}
-        {currentCards.map(({ id, question, answer }) => (
-          <TableRow key={id}>
-            {[cardSetModes.VIEW, cardSetModes.ADD].includes(currentMode)
-            && (
-              <>
-                <TableCell>{question}</TableCell>
-                <TableCell>{answer}</TableCell>
-                <SideContent>
-                  <StyledDeleteIcon onClick={() => removeCard(id)} />
-                </SideContent>
-              </>
-            )}
-          </TableRow>
-        ))}
+        {currentCards && renderCurrentCards(currentCards)}
       </TableBody>
     </SetTable>
   );
@@ -332,21 +354,25 @@ function CardSet() {
       {![cardSetModes.CONFIG, cardSetModes.STUDY].includes(currentMode)
       && (
         <SetContainer>
-          <h4>
-            Card Set:
-            {originalSet ? originalSet.name : 'None'}
-          </h4>
+          <h3>
+            {(originalSet && originalSet.name) || ''}
+          </h3>
           <div>
-            {getButton(cardSetModes.CONFIG, 'Start Studying')}
-            {getButton(cardSetModes.ADD, 'Add More Cards')}
-            {getButton(cardSetModes.EDIT, 'Edit Cards')}
-            <SuccessIndicator>{displayMessage || ''}</SuccessIndicator>
+            {((currentCards && currentCards.length)
+            && (
+              <>
+                {getButton(cardSetModes.CONFIG, 'Start Studying')}
+                {getButton(cardSetModes.ADD, 'Add More Cards')}
+                {getButton(cardSetModes.EDIT, 'Edit Cards')}
+                <SuccessIndicator>{displayMessage || ''}</SuccessIndicator>
+              </>
+            )) || ''}
           </div>
-          {(
-            currentCards && currentCards.length
-              ? getCardSetTable()
-              : `${originalSet.name} currently contains no cards.`
-          )}
+          {getCardSetTable()}
+          {(currentCards && !currentCards.length
+          && (
+            `${originalSet.name} currently contains no cards. Create some cards above to get started!`
+          )) || ''}
         </SetContainer>
       )}
     </CardSetProvider>
