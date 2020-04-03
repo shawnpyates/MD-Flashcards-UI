@@ -1,8 +1,9 @@
 import { API_URL } from './config';
 
-const apiCall = async (endpoint, attrs) => {
+const apiCall = async (endpoint, method, body) => {
   const result = await fetch(`${API_URL}${endpoint}`, {
-    ...attrs,
+    method,
+    body: JSON.stringify(body),
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -16,23 +17,22 @@ export const getCurrentUser = async () => {
 };
 
 export const createNewCardGroup = async ({ name, userId }) => {
-  const group = await apiCall('/card_groups', {
-    method: 'POST',
-    body: JSON.stringify({ card_group: { name, user_id: userId } }),
-  });
+  const group = await apiCall('/card_groups', 'POST', { card_group: { name, user_id: userId } });
   return group;
 };
 
-export const getCardGroup = async ({ endpoint }) => {
-  const group = await apiCall(endpoint);
+export const getCardGroup = async ({ id }) => {
+  const group = await apiCall(`/card_groups/${id}`);
   return group;
+};
+
+export const getCardLibrary = async () => {
+  const sets = await apiCall('/card_sets');
+  return sets;
 };
 
 export const createNewCardSet = async ({ name, groupId }) => {
-  const set = await apiCall('/card_sets', {
-    method: 'POST',
-    body: JSON.stringify({ card_set: { name, card_group_id: groupId } }),
-  });
+  const set = await apiCall('/card_sets', 'POST', { card_set: { name, card_group_id: groupId } });
   return set;
 };
 
@@ -42,9 +42,8 @@ export const getCardSet = async ({ id }) => {
 };
 
 export const createNewCard = async ({ question, answer, cardSetId }) => {
-  const card = await apiCall('/cards', {
-    method: 'POST',
-    body: JSON.stringify({ card: { question, answer, card_set_id: cardSetId } }),
+  const card = await apiCall('/cards', 'POST', {
+    card: { question, answer, card_set_id: cardSetId },
   });
   return card;
 };
@@ -52,14 +51,13 @@ export const createNewCard = async ({ question, answer, cardSetId }) => {
 export const editCard = async ({
   id, question, answer, cardSetId,
 }) => {
-  const updatedCardSet = await apiCall(`/cards/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify({ card: { question, answer, card_set_id: cardSetId } }),
+  const updatedCardSet = await apiCall(`/cards/${id}`, 'PUT', {
+    card: { question, answer, card_set_id: cardSetId },
   });
   return updatedCardSet;
 };
 
 export const removeCard = async ({ id }) => {
-  const remainingCards = await apiCall(`/cards/${id}`, { method: 'DELETE' });
+  const remainingCards = await apiCall(`/cards/${id}`, 'DELETE');
   return remainingCards;
 };

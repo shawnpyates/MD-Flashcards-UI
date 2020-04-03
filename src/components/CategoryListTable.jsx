@@ -1,8 +1,8 @@
 /* eslint react/prop-types: 0 */
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Button,
-  Table as TableUi,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
@@ -11,7 +11,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import styled from 'styled-components';
-import { Redirect } from 'react-router-dom';
+import dayjs from 'dayjs';
 
 const MainContainer = styled(TableContainer)`
   width: 70%;
@@ -37,7 +37,7 @@ const StyledButton = styled(Button)`
   }
 
   ${(props) => (
-    props.newgroup
+    props.newitem
       ? 'transform: translateY(25%);'
       : 'display: block;'
   )}
@@ -47,7 +47,7 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const NewGroupContainer = styled.div`
+const NewItemContainer = styled.div`
   margin: 30px auto 5px;
 `;
 
@@ -59,41 +59,44 @@ const ContentTableCell = styled(TableCell)`
   width: calc(100% / ${(props) => props.columnlength})
 `;
 
+const EmptyDataIndicator = styled.div`
+  margin: 35px auto;
+  text-align: center;
+`;
+
+const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
+
 const capitalize = (str) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
 
-
-function Table({
-  title, type, items, headers, itemKeysToDisplay, createNewItem,
+function CategoryListTable({
+  title,
+  type,
+  items,
+  dataConfig,
+  createNewItem,
+  handleRowClick,
+  newItemName,
+  setNewItemName,
+  handleChange,
+  shouldRenderAddOption,
 }) {
-  const [itemIdForRedirect, setItemIdForRedirect] = useState(null);
-  const [newItemName, setNewItemName] = useState(null);
-
-  const handleChange = ({ target: { value } }) => {
-    setNewItemName(value);
-  };
-
-
-  if (itemIdForRedirect) {
-    return <Redirect to={`/${type}s/${itemIdForRedirect}`} />;
-  }
-
   const getItemTable = () => (
-    <TableUi>
+    <Table>
       <TableHead>
-        {headers.map((header) => <HeadTableCell>{header}</HeadTableCell>)}
+        {dataConfig.map(({ header }) => <HeadTableCell key={header}>{header}</HeadTableCell>)}
       </TableHead>
       <TableBody>
         {items.map((row) => (
-          <StyledRow key={row.id} onClick={() => setItemIdForRedirect(row.id)}>
-            {itemKeysToDisplay.map((key) => (
-              <ContentTableCell columnlength={itemKeysToDisplay.length}>
-                {row[key]}
+          <StyledRow key={row.id} onClick={() => handleRowClick(row.id)}>
+            {dataConfig.map(({ key, isTimestamp }) => (
+              <ContentTableCell key={key} columnlength={dataConfig.length}>
+                {isTimestamp ? formatDate(row[key]) : row[key]}
               </ContentTableCell>
             ))}
           </StyledRow>
         ))}
       </TableBody>
-    </TableUi>
+    </Table>
   );
 
   return (
@@ -102,18 +105,21 @@ function Table({
         <h3>
           {title}
         </h3>
-        <StyledButton
-          onClick={() => {
-            if (!newItemName) {
-              setNewItemName('');
-            }
-          }}
-        >
-          {`Add a New ${capitalize(type)}`}
-        </StyledButton>
+        {shouldRenderAddOption
+        && (
+          <StyledButton
+            onClick={() => {
+              if (!newItemName) {
+                setNewItemName('');
+              }
+            }}
+          >
+            {`Add a New ${capitalize(type)}`}
+          </StyledButton>
+        )}
         {(newItemName || newItemName === '')
         && (
-          <NewGroupContainer>
+          <NewItemContainer>
             <StyledTextField
               label={`Name Your New ${capitalize(type)}`}
               variant="outlined"
@@ -121,22 +127,26 @@ function Table({
               onChange={handleChange}
             />
             <StyledButton
-              newgroup
+              newitem
               disabled={!newItemName}
               onClick={createNewItem}
             >
               Create
             </StyledButton>
-          </NewGroupContainer>
+          </NewItemContainer>
         )}
         {(
           items.length
-            ? getItemTable(items, setItemIdForRedirect)
-            : `You currently have no card ${type}s. Create a group above to get started!`
+            ? getItemTable()
+            : (
+              <EmptyDataIndicator>
+                {`You currently have no card ${type}s. Create a ${type} above to get started!`}
+              </EmptyDataIndicator>
+            )
         )}
       </MainContainer>
     </>
   );
 }
 
-export default Table;
+export default CategoryListTable;

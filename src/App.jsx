@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
+import CardGroup from './containers/CardGroup';
+import CardLibrary from './containers/CardLibrary';
+import CardSet from './containers/CardSet';
 import Main from './containers/Main';
 
-import NavBar from './components/NavBar';
 import Drawer from './components/DrawerComponent';
+import NavBar from './components/NavBar';
 import Welcome from './components/Welcome';
-import CardGroup from './containers/CardGroup';
-import CardSet from './containers/CardSet';
 
 import { UserProvider } from './context/userContext';
 
@@ -48,7 +49,7 @@ function App() {
               <CardSet />
             </Route>
             <Route path="/library" exact>
-              <CardGroup />
+              <CardLibrary />
             </Route>
           </Switch>
         </UserProvider>

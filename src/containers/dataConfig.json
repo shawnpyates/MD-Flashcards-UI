@@ -1,0 +1,48 @@
+{
+  "groups": [
+    {
+      "header": "Name",
+      "key": "name"
+    },
+    {
+      "header": "Created",
+      "key": "inserted_at",
+      "isTimestamp": true
+    },
+    {
+      "header": "Number of Card Sets",
+      "key": "card_set_length"
+    }
+  ],
+
+  "sets": [
+    {
+      "header": "Name",
+      "key": "name"
+    },
+    {
+      "header": "Created",
+      "key": "inserted_at",
+      "isTimestamp": true
+    },
+    {
+      "header": "Number of Cards",
+      "key": "card_length"
+    }
+  ],
+
+  "library": [
+    {
+      "header": "Name",
+      "key": "name"
+    },
+    {
+      "header": "Creator",
+      "key": "creator_name"
+    },
+    {
+      "header": "Number of Cards",
+      "key": "card_length"
+    }
+  ]
+}

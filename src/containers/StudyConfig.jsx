@@ -108,11 +108,7 @@ function StudyConfig() {
 
   return (
     <ConfigContainer>
-      <h2>
-        Get ready to study
-        {originalSet.name}
-        !
-      </h2>
+      <h2>{`Get ready to study ${originalSet.name}!`}</h2>
       <FormControl component="fieldset">
         <FormLabel component="legend">Which order should the cards appear in?</FormLabel>
         <StyledRadioGroup
