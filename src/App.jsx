@@ -7,8 +7,8 @@ import CardLibrary from './containers/CardLibrary';
 import CardSet from './containers/CardSet';
 import Main from './containers/Main';
 
-import Drawer from './components/DrawerComponent';
-import NavBar from './components/NavBar';
+import DrawerComponent from './components/Drawer/Drawer';
+import NavBar from './components/NavBar/NavBar';
 import Welcome from './components/Welcome';
 
 import { UserProvider } from './context/userContext';
@@ -37,7 +37,7 @@ function App() {
       <Router>
         <UserProvider currentUser={currentUser}>
           <NavBar />
-          <Drawer />
+          <DrawerComponent />
           <Switch>
             <Route path="/" exact>
               {currentUser ? <Main /> : <Welcome />}

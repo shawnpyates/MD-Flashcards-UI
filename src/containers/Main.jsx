@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 
 import { UserContext } from '../context/userContext';
 
-import CategoryListTable from '../components/CategoryListTable';
+import CategoryListTable from '../components/CategoryListTable/CategoryListTable';
 import { createNewCardGroup } from '../api';
 import { groups as groupsDataConfig } from './dataConfig.json';
 

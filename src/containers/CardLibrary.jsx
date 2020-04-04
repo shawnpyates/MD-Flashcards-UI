@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import CategoryListTable from '../components/CategoryListTable';
+import CategoryListTable from '../components/CategoryListTable/CategoryListTable';
 import { getCardLibrary } from '../api';
 import { library as libraryDataConfig } from './dataConfig.json';
 

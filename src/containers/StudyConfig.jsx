@@ -1,51 +1,16 @@
 import React, { useContext, useState } from 'react';
-import {
-  Button,
-  Container,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from '@material-ui/core';
-import styled from 'styled-components';
 import dayjs from 'dayjs';
 
 import { actionTypes, cardSetModes, displayFirstOptions } from '../reducers/cardSetReducer';
 import { CardSetContext } from '../context/cardSetContext';
+
+import ConfigForm from '../components/ConfigForm/ConfigForm';
 
 const orderOptions = {
   ASCENDING: 'ascending',
   DESCENDING: 'descending',
   RANDOM: 'random',
 };
-
-const ConfigContainer = styled(Container)`
-  width: 70%;
-  position: absolute;
-  top: 100px;
-  left: 250px;
-`;
-
-const StyledRadioGroup = styled(RadioGroup)`
-  margin-bottom: 20px;
-`;
-
-const StyledButton = styled(Button)`
-  background-color: #060;
-  color: #FFF;
-  margin-right: 25px;
-
-  &:hover {
-    background-color: #070;
-  }
-`;
-
-const capitalize = (str) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
-
-const renderOptions = (options) => Object.values(options).map((option) => (
-  <FormControlLabel key={option} value={option} control={<Radio />} label={capitalize(option)} />
-));
 
 const shuffleCards = (cards) => {
   const clonedCards = [...cards];
@@ -101,39 +66,17 @@ function StudyConfig() {
     dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
   };
 
-  const getButton = (mode, text) => (
-    <StyledButton onClick={() => handleButtonClick(mode)}>{text}</StyledButton>
-  );
-
 
   return (
-    <ConfigContainer>
-      <h2>{`Get ready to study ${originalSet.name}!`}</h2>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Which order should the cards appear in?</FormLabel>
-        <StyledRadioGroup
-          aria-label="displayOrder"
-          name="order"
-          value={formState.order}
-          onChange={handleChange}
-        >
-          {renderOptions(orderOptions)}
-        </StyledRadioGroup>
-        <FormLabel component="legend">Which side of the card should appear first?</FormLabel>
-        <StyledRadioGroup
-          aria-label="displayFirst"
-          name="displayFirst"
-          value={formState.displayFirst}
-          onChange={handleChange}
-        >
-          {renderOptions(displayFirstOptions)}
-        </StyledRadioGroup>
-      </FormControl>
-      <div>
-        {getButton(cardSetModes.STUDY, 'Start!')}
-        {getButton(cardSetModes.VIEW, 'Go Back to Card List')}
-      </div>
-    </ConfigContainer>
+    <ConfigForm
+      handleButtonClick={handleButtonClick}
+      formState={formState}
+      originalSet={originalSet}
+      handleChange={handleChange}
+      cardSetModes={cardSetModes}
+      displayFirstOptions={displayFirstOptions}
+      orderOptions={orderOptions}
+    />
   );
 }
 

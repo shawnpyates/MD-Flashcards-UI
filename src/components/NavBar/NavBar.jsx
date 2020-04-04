@@ -1,45 +1,19 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
 
 import {
-  AppBar,
-  Button,
   Link,
   Toolbar,
   Typography,
 } from '@material-ui/core';
-import { GitHub } from '@material-ui/icons';
 
-import { UserContext } from '../context/userContext';
+import { UserContext } from '../../context/userContext';
+import { AUTH_URL } from '../../config';
 
-const StyledAppBar = styled(AppBar)`
-  background-color: #060;
-  z-index: 5000;
-  height: 60px;
-`;
-
-const StyledButton = styled(Button)`
-  background-color: #FFF;
-  position: absolute;
-  right: 60px;
-
-  &:hover {
-    background-color: #F0F0F0;
-  }
-
-  & a {
-    color: #000;
-    &:hover {
-      text-decoration: none;
-    }
-  }
-`;
-
-const StyledGitHubIcon = styled(GitHub)`
-  font-size: 16px;
-  margin-right: 8px;
-`;
-
+import {
+  StyledAppBar,
+  StyledButton,
+  StyledGitHubIcon,
+} from './styledComponents';
 
 function NavBar() {
   const { currentUser } = useContext(UserContext);
@@ -62,7 +36,7 @@ function NavBar() {
           MD Flashcards
         </Typography>
         <StyledButton>
-          <Link href={`http://localhost:4000/auth${endpoint}`}>
+          <Link href={`${AUTH_URL}${endpoint}`}>
             {buttonContent}
           </Link>
         </StyledButton>

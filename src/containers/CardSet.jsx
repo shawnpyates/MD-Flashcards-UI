@@ -2,24 +2,12 @@ import React, {
   useContext, useEffect, useReducer, useRef, useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextareaAutosize,
-} from '@material-ui/core';
-import styled from 'styled-components';
-import { DeleteForever } from '@material-ui/icons';
 import shortid from 'shortid';
-import ReactMarkdown from 'react-markdown';
 
 import StudyConfig from './StudyConfig';
 import StudySession from './StudySession';
-import CodeBlock from '../components/CodeBlock';
+
+import CardListTable from '../components/CardListTable/CardListTable';
 
 import { CardSetProvider } from '../context/cardSetContext';
 import { UserContext } from '../context/userContext';
@@ -37,81 +25,6 @@ import {
   editCard as editCardApiCall,
   removeCard as removeCardApiCall,
 } from '../api';
-
-const SetContainer = styled(TableContainer)`
-  width: 80%;
-  overflow: visible;
-  position: absolute;
-  top: 100px;
-  left: 250px;
-`;
-
-const SetTable = styled(Table)`
-  width: 95%;
-`;
-
-const StyledButton = styled(Button)`
-  background-color: #060;
-  color: #FFF;
-  ${((props) => (
-    props.createrow
-      ? ''
-      : 'margin-right: 25px;'
-  ))}
-
-  ${((props) => (
-    props.addnewrow
-      ? 'width: 80px; font-size: 10px;'
-      : ''
-  ))}
-
-  &:hover {
-    background-color: #070;
-  }
-
-  &:disabled{ 
-    background-color: #F0F0F0;
-  }
-`;
-
-const SideContent = styled.td`
-  margin-left: 20px;
-`;
-
-const HeadTableCell = styled(TableCell)`
-  font-weight: 700;
-  text-transform: uppercase;
-`;
-
-const StyledTextarea = styled(TextareaAutosize)`
-  width: 100%;
-`;
-
-const SuccessIndicator = styled.span`
-  margin-left: 20px;
-  color: #060;
-  font-weight: 700;
-`;
-
-const StyledDeleteIcon = styled(DeleteForever)`
-  color: #F00;
-  cursor: pointer;
-`;
-
-const ContentTableCell = styled(TableCell)`
-  width: calc(100% / ${(props) => props.columnlength});
-  ${(props) => (props.islast && 'border-bottom: none;') || ''}
-  ${(props) => (props.fornewrowbutton && 'padding-bottom: 35px;') || ''}
-  padding: 0 5px auto;
-  & pre > code {
-    white-space: pre-wrap !important;
-  }
-`;
-
-const EmptyDataIndicator = styled.div`
-  margin: 35px auto;
-  text-align: center;
-`;
 
 const getInitialNewRow = () => ({ question: null, answer: null, shortid: shortid.generate() });
 
@@ -223,119 +136,34 @@ function CardSet() {
       });
   };
 
-  const renderCurrentCards = (cards) => (
-    cards.map(({ id, question, answer }) => (
-      <TableRow key={id}>
-        {[cardSetModes.VIEW, cardSetModes.ADD].includes(currentMode)
-        && (
-          <>
-            <ContentTableCell columnlength={2}>
-              <ReactMarkdown source={question} renderers={{ code: CodeBlock }} />
-            </ContentTableCell>
-            <ContentTableCell columnlength={2}>
-              <ReactMarkdown source={answer} renderers={{ code: CodeBlock }} />
-            </ContentTableCell>
-            <SideContent>
-              {isSetFromCurrentUser
-              && (
-                <StyledDeleteIcon onClick={() => removeCard(id)} />
-              )}
-            </SideContent>
-          </>
-        )}
-      </TableRow>
-    ))
-  );
+  const renderActiveMode = (mode) => {
+    switch (mode) {
+      case cardSetModes.CONFIG:
+        return <StudyConfig />;
+      case cardSetModes.STUDY:
+        return <StudySession />;
+      default:
+        return (
+          <CardListTable
+            cardSetModes={cardSetModes}
+            currentMode={currentMode}
+            isSetFromCurrentUser={isSetFromCurrentUser}
+            addNewCard={addNewCard}
+            editCard={editCard}
+            removeCard={removeCard}
+            temporaryRows={temporaryRows}
+            currentCards={currentCards}
+            handleTextareaChange={handleTextareaChange}
+            addNewRow={addNewRow}
+            dispatch={dispatch}
+            originalSet={originalSet}
+            actionTypes={actionTypes}
+            displayMessage={displayMessage}
+          />
+        );
+    }
+  };
 
-  const getCardSetTable = () => (
-    <SetTable>
-      <TableHead>
-        <HeadTableCell>Question</HeadTableCell>
-        <HeadTableCell>Answer</HeadTableCell>
-      </TableHead>
-      <TableBody>
-        {([cardSetModes.ADD, cardSetModes.EDIT].includes(currentMode) && temporaryRows)
-        && temporaryRows.map(({
-          question, answer, shortid: key, id,
-        }, i) => {
-          const isLast = i === temporaryRows.length - 1;
-          const { buttonClickHandler, buttonText, shouldDisplayNewRowButton } = (
-            currentMode === cardSetModes.ADD
-              ? {
-                buttonClickHandler: addNewCard,
-                buttonText: 'Add',
-                shouldDisplayNewRowButton: isLast,
-              } : {
-                buttonClickHandler: editCard,
-                buttonText: 'Edit',
-                shouldDisplayNewRowButton: false,
-              }
-          );
-          const correspondingCard = id && currentCards.find((card) => card.id === id);
-          const isUnchanged = (
-            correspondingCard
-            && (correspondingCard.question === question && correspondingCard.answer === answer)
-          );
-
-          return (
-            <>
-              <TableRow key={id || key}>
-                <ContentTableCell columnlength={2} islast={isLast}>
-                  <StyledTextarea
-                    name="question"
-                    value={question}
-                    onChange={(ev) => handleTextareaChange(ev, i)}
-                    rowsMin={3}
-                  />
-                </ContentTableCell>
-                <ContentTableCell columnlength={2} islast={isLast}>
-                  <StyledTextarea
-                    name="answer"
-                    value={answer}
-                    onChange={(ev) => handleTextareaChange(ev, i)}
-                    rowsMin={3}
-                  />
-                </ContentTableCell>
-                <SideContent>
-                  <StyledButton
-                    createrow
-                    disabled={!question || !answer || isUnchanged}
-                    onClick={() => {
-                      buttonClickHandler({
-                        question, answer, index: i, id,
-                      });
-                    }}
-                  >
-                    {buttonText}
-                  </StyledButton>
-                </SideContent>
-              </TableRow>
-              {shouldDisplayNewRowButton
-              && (
-                <TableRow key="addnew">
-                  <ContentTableCell columnlength={2} fornewrowbutton>
-                    <StyledButton addnewrow onClick={addNewRow}>+ New Row</StyledButton>
-                  </ContentTableCell>
-                  <ContentTableCell columnlength={2} />
-                </TableRow>
-              )}
-            </>
-          );
-        })}
-        {currentCards && renderCurrentCards(currentCards)}
-      </TableBody>
-    </SetTable>
-  );
-
-  const getButton = (mode, text) => (
-    <StyledButton
-      onClick={() => {
-        dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
-      }}
-    >
-      {text}
-    </StyledButton>
-  );
 
   return (
     <CardSetProvider
@@ -345,39 +173,7 @@ function CardSet() {
       originalSet={originalSet}
       dispatch={dispatch}
     >
-      {currentMode === cardSetModes.CONFIG && <StudyConfig />}
-      {currentMode === cardSetModes.STUDY && <StudySession />}
-      {![cardSetModes.CONFIG, cardSetModes.STUDY].includes(currentMode)
-      && (
-        <SetContainer>
-          <h3>
-            {(originalSet && originalSet.name) || ''}
-          </h3>
-          <div>
-            {((currentCards && currentCards.length)
-            && (
-              <>
-                {getButton(cardSetModes.CONFIG, 'Start Studying')}
-                {isSetFromCurrentUser
-                && (
-                  <>
-                    {getButton(cardSetModes.ADD, 'Add More Cards')}
-                    {getButton(cardSetModes.EDIT, 'Edit Cards')}
-                    <SuccessIndicator>{displayMessage || ''}</SuccessIndicator>
-                  </>
-                )}
-              </>
-            )) || ''}
-          </div>
-          {getCardSetTable()}
-          {(currentCards && !currentCards.length
-          && (
-            <EmptyDataIndicator>
-              {`${originalSet.name} currently contains no cards. Create some cards above to get started!`}
-            </EmptyDataIndicator>
-          )) || ''}
-        </SetContainer>
-      )}
+      {renderActiveMode(currentMode)}
     </CardSetProvider>
   );
 }

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
 
-import CategoryListTable from '../components/CategoryListTable';
+import CategoryListTable from '../components/CategoryListTable/CategoryListTable';
 import { getCardGroup, createNewCardSet } from '../api';
 import { sets as setsDataConfig } from './dataConfig.json';
 
 function CardGroup() {
   const { id: groupId } = useParams();
-  const [{ name, card_sets: cardSets }, setCurrentGroup] = useState([]);
+  const [{ name, card_sets: cardSets }, setCurrentGroup] = useState({});
   const [cardSetIdForRedirect, setCardSetIdForRedirect] = useState(null);
   const [newSetName, setNewSetName] = useState(null);
 
@@ -34,7 +34,7 @@ function CardGroup() {
   }
 
   return (
-    (cardSets.length
+    (cardSets
     && (
       <CategoryListTable
         title={`${name || 'All'} Card Sets`}

@@ -29,27 +29,27 @@ const drawerItems = [
   },
 ];
 
-const StyledLink = styled(Link)`
-  text-decoration: none;
+const StyledDrawer = styled(Drawer)`
   color: #000;
 `;
 
 function DrawerComponent() {
   const { drawer, toolbar } = useStyles();
   return (
-    <Drawer className={drawer} variant="permanent" anchor="left">
+    <StyledDrawer className={drawer} variant="permanent" anchor="left">
       <div className={toolbar} />
       <List>
         {drawerItems.map(({ text, link }) => (
-          <StyledLink to={link} key={text}>
+          <Link to={link} key={text}>
             <ListItem button>
               <ListItemText primary={text} />
             </ListItem>
-          </StyledLink>
+          </Link>
         ))}
       </List>
-    </Drawer>
+    </StyledDrawer>
   );
 }
+
 
 export default DrawerComponent;
