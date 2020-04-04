@@ -1,0 +1,11 @@
+{
+  "GET_CURRENT_USER": "getCurrentUser",
+  "CREATE_NEW_CARD_GROUP": "createNewCardGroup",
+  "GET_CARD_GROUP": "getCardGroup",
+  "GET_CARD_LIBRARY": "getCardLibrary",
+  "CREATE_NEW_CARD_SET": "createNewCardSet",
+  "GET_CARD_SET": "getCardSet",
+  "CREATE_NEW_CARD": "createNewCard",
+  "EDIT_CARD": "editCard",
+  "DELETE_CARD": "deleteCard"
+}

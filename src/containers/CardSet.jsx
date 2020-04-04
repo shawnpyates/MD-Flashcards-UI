@@ -19,12 +19,14 @@ import {
   initialState as initialCardSetState,
 } from '../reducers/cardSetReducer';
 
+
+import { getApiReqData, useApiFetch, useApiUpdate } from '../api/apiRequest';
 import {
-  getCardSet,
-  createNewCard,
-  editCard as editCardApiCall,
-  removeCard as removeCardApiCall,
-} from '../api';
+  GET_CARD_SET,
+  CREATE_NEW_CARD,
+  EDIT_CARD,
+  DELETE_CARD,
+} from '../api/apiReqTypes.json';
 
 const getInitialNewRow = () => ({ question: null, answer: null, shortid: shortid.generate() });
 
@@ -55,15 +57,42 @@ function CardSet() {
   const [displayMessage, setDisplayMessage] = useState(null);
   const previousMode = usePrevious(currentMode);
 
+  const [
+    set,
+    isLoading,
+  ] = useApiFetch(getApiReqData({ type: GET_CARD_SET, urlParams: { id: setId } }));
+
+  const [
+    { data: createdCard, isLoading: isCreating, error: errorOnCreate },
+    createNewCard,
+  ] = useApiUpdate(getApiReqData({
+    type: CREATE_NEW_CARD,
+    data: { question, answer, cardSetId: originalSet.id },
+  }));
+
+  // const addNewCard = ({ question, answer, index }) => {
+  //   createNewCard({ question, answer, cardSetId: originalSet.id })
+  //     .then((card) => {
+  //       dispatch({ type: actionTypes.UPDATE_CARDS, payload: [...currentCards, card] });
+  //       setTemporaryRows(
+  //         temporaryRows.length > 1
+  //           ? [
+  //             ...temporaryRows.slice(0, index),
+  //             ...temporaryRows.slice(index + 1),
+  //           ] : [getInitialNewRow()],
+  //       );
+  //       setDisplayMessage('Successfully added card!');
+  //     });
+  // };
+
   useEffect(() => {
-    getCardSet({ id: setId })
-      .then((set) => {
-        dispatch({ type: actionTypes.SET_ORIGINAL, payload: set });
-        if (!set.cards.length) {
-          dispatch({ type: actionTypes.UPDATE_MODE, payload: cardSetModes.ADD });
-        }
-      });
-  }, [setId]);
+    if (set) {
+      dispatch({ type: actionTypes.SET_ORIGINAL, payload: set });
+      if (!set.cards.length) {
+        dispatch({ type: actionTypes.UPDATE_MODE, payload: cardSetModes.ADD });
+      }
+    }
+  }, [set]);
 
   useEffect(() => {
     if (displayMessage) {

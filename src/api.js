@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import { API_URL } from './config';
 
 const apiCall = async (endpoint, method, body) => {
@@ -11,10 +13,32 @@ const apiCall = async (endpoint, method, body) => {
   return data;
 };
 
-export const getCurrentUser = async () => {
-  const user = await apiCall('/current_user');
-  return user;
+
+export const useApiFetch = ({ endpoint, method, body }) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  async function fetchUrl() {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      method,
+      body: JSON.stringify(body),
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const json = await response.json();
+    setData(json);
+    setLoading(false);
+  }
+  useEffect(() => {
+    fetchUrl();
+  }, []);
+  return [data, loading];
 };
+
+// export const getApiReqData = ({ type, urlParams, body }) => 
+// export const getCurrentUser = () => useApiFetch('/current_user');
+// // const user = await apiCall('/current_user');
+// // return user;
+// // ;
 
 export const createNewCardGroup = async ({ name, userId }) => {
   const group = await apiCall('/card_groups', 'POST', { card_group: { name, user_id: userId } });

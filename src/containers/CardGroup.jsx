@@ -1,40 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
 
 import CategoryListTable from '../components/CategoryListTable/CategoryListTable';
-import { getCardGroup, createNewCardSet } from '../api';
+
+import { getApiReqData, useApiFetch, useApiUpdate } from '../api/apiRequest';
+import { GET_CARD_GROUP, CREATE_NEW_CARD_SET } from '../api/apiReqTypes.json';
+
 import { sets as setsDataConfig } from './dataConfig.json';
 
 function CardGroup() {
   const { id: groupId } = useParams();
-  const [{ name, card_sets: cardSets }, setCurrentGroup] = useState({});
-  const [cardSetIdForRedirect, setCardSetIdForRedirect] = useState(null);
+  const [selectedCardSetId, setSelectedCardSetId] = useState(null);
   const [newSetName, setNewSetName] = useState(null);
 
-  useEffect(() => {
-    getCardGroup({ id: groupId })
-      .then((group) => {
-        setCurrentGroup(group);
-      });
-  }, [groupId]);
+  const [
+    { name, card_sets: cardSets },
+    isLoading,
+  ] = useApiFetch(getApiReqData({ type: GET_CARD_GROUP, urlParams: { id: groupId } }));
 
   const handleChange = ({ target: { value } }) => {
     setNewSetName(value);
   };
 
-  const createNewSet = () => {
-    createNewCardSet({ name: newSetName, groupId })
-      .then((set) => {
-        setCardSetIdForRedirect(set.id);
-      });
-  };
+  const [
+    { data: { id: createdSetId }, isLoading: isCreating, error: errorOnCreate },
+    createNewSet,
+  ] = useApiUpdate(getApiReqData({
+    type: CREATE_NEW_CARD_SET,
+    data: { name: newSetName, groupId },
+  }));
 
-  if (cardSetIdForRedirect) {
-    return <Redirect to={`/sets/${cardSetIdForRedirect}`} />;
+  const idForRedirect = selectedCardSetId || createdSetId;
+
+  if (idForRedirect) {
+    return <Redirect to={`/sets/${idForRedirect}`} />;
   }
 
   return (
-    (cardSets
+    (!isLoading
     && (
       <CategoryListTable
         title={`${name || 'All'} Card Sets`}
@@ -45,10 +48,10 @@ function CardGroup() {
         setNewItemName={setNewSetName}
         createNewItem={createNewSet}
         handleChange={handleChange}
-        handleRowClick={setCardSetIdForRedirect}
+        handleRowClick={setSelectedCardSetId}
         shouldRenderAddOption
       />
-    )) || <div />
+    )) || <div>Loading...</div>
   );
 }
 

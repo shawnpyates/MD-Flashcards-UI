@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -13,7 +13,8 @@ import Welcome from './components/Welcome';
 
 import { UserProvider } from './context/userContext';
 
-import { getCurrentUser } from './api';
+import { getApiReqData, useApiFetch } from './api/apiRequest';
+import { GET_CURRENT_USER } from './api/apiReqTypes.json';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -23,14 +24,7 @@ const useStyles = makeStyles(() => ({
 
 function App() {
   const { root } = useStyles();
-  const [currentUser, setCurrentUser] = useState(null);
-
-  useEffect(() => {
-    getCurrentUser()
-      .then((user) => {
-        setCurrentUser(user);
-      });
-  }, []);
+  const [currentUser, isLoading] = useApiFetch(getApiReqData({ type: GET_CURRENT_USER }));
 
   return (
     <div className={root}>
@@ -38,20 +32,24 @@ function App() {
         <UserProvider currentUser={currentUser}>
           <NavBar />
           <DrawerComponent />
-          <Switch>
-            <Route path="/" exact>
-              {currentUser ? <Main /> : <Welcome />}
-            </Route>
-            <Route path="/groups/:id" exact>
-              <CardGroup />
-            </Route>
-            <Route path="/sets/:id" exact>
-              <CardSet />
-            </Route>
-            <Route path="/library" exact>
-              <CardLibrary />
-            </Route>
-          </Switch>
+          {isLoading
+            ? <div>Loading!</div>
+            : (
+              <Switch>
+                <Route path="/" exact>
+                  {currentUser ? <Main /> : <Welcome />}
+                </Route>
+                <Route path="/groups/:id" exact>
+                  <CardGroup />
+                </Route>
+                <Route path="/sets/:id" exact>
+                  <CardSet />
+                </Route>
+                <Route path="/library" exact>
+                  <CardLibrary />
+                </Route>
+              </Switch>
+            )}
         </UserProvider>
       </Router>
     </div>
