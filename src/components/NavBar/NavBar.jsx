@@ -16,7 +16,7 @@ import {
 } from './styledComponents';
 
 function NavBar() {
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, isUserLoading } = useContext(UserContext);
   const { endpoint, buttonContent } = (
     currentUser
       ? { endpoint: '/signout', buttonContent: 'Sign Out' }
@@ -35,11 +35,14 @@ function NavBar() {
         <Typography variant="h5" color="inherit">
           MD Flashcards
         </Typography>
-        <StyledButton>
-          <Link href={`${AUTH_URL}${endpoint}`}>
-            {buttonContent}
-          </Link>
-        </StyledButton>
+        {!isUserLoading
+        && (
+          <StyledButton>
+            <Link href={`${AUTH_URL}${endpoint}`}>
+              {buttonContent}
+            </Link>
+          </StyledButton>
+        )}
       </Toolbar>
     </StyledAppBar>
   );

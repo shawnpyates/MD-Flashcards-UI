@@ -19,6 +19,7 @@ export const ListContainer = styled(TableContainer)`
 
 export const ListTable = styled(Table)`
   width: 95%;
+  ${(props) => (props.isLoading ? 'filter: blur(5px);' : '')}
 `;
 
 export const ListButton = styled(Button)`
@@ -41,12 +42,6 @@ export const SideContent = styled.td`
 
 export const StyledTextarea = styled(TextareaAutosize)`
   width: 100%;
-`;
-
-export const SuccessIndicator = styled.span`
-  margin-left: 20px;
-  color: #060;
-  font-weight: 700;
 `;
 
 export const StyledDeleteIcon = styled(DeleteForever)`

@@ -15,20 +15,22 @@ import {
   ListButton,
   SideContent,
   StyledTextarea,
-  SuccessIndicator,
   StyledDeleteIcon,
   HeadTableCell,
   ContentTableCell,
   EmptyDataIndicator,
 } from './styledComponents';
 
+import {
+  CREATE_NEW_CARD,
+  EDIT_CARD,
+  DELETE_CARD,
+} from '../../api/apiReqTypes.json';
+
 function CardListTable({
   cardSetModes,
   currentMode,
   isSetFromCurrentUser,
-  addNewCard,
-  editCard,
-  removeCard,
   temporaryRows,
   currentCards,
   handleTextareaChange,
@@ -36,7 +38,8 @@ function CardListTable({
   dispatch,
   originalSet,
   actionTypes,
-  displayMessage,
+  setCardUnderOperation,
+  isLoading,
 }) {
   const renderCurrentCards = (cards) => (
     cards.map(({ id, question, answer }) => (
@@ -53,7 +56,11 @@ function CardListTable({
             <SideContent>
               {isSetFromCurrentUser
               && (
-                <StyledDeleteIcon onClick={() => removeCard(id)} />
+                <StyledDeleteIcon
+                  onClick={() => {
+                    setCardUnderOperation({ type: DELETE_CARD, id, submit: true });
+                  }}
+                />
               )}
             </SideContent>
           </>
@@ -63,7 +70,7 @@ function CardListTable({
   );
 
   const getCardListTable = () => (
-    <ListTable>
+    <ListTable isLoading={isLoading}>
       <TableHead>
         <HeadTableCell>Question</HeadTableCell>
         <HeadTableCell>Answer</HeadTableCell>
@@ -74,16 +81,15 @@ function CardListTable({
           question, answer, shortid: key, id,
         }, i) => {
           const isLast = i === temporaryRows.length - 1;
-          const { buttonClickHandler, buttonText, shouldDisplayNewRowButton } = (
+          const { type, buttonText, shouldDisplayNewRowButton } = (
             currentMode === cardSetModes.ADD
               ? {
-                buttonClickHandler: addNewCard,
+                type: CREATE_NEW_CARD,
                 buttonText: 'Add',
                 shouldDisplayNewRowButton: isLast,
               } : {
-                buttonClickHandler: editCard,
+                type: EDIT_CARD,
                 buttonText: 'Edit',
-                shouldDisplayNewRowButton: false,
               }
           );
           const correspondingCard = id && currentCards.find((card) => card.id === id);
@@ -116,8 +122,8 @@ function CardListTable({
                     createnewitem
                     disabled={!question || !answer || isUnchanged}
                     onClick={() => {
-                      buttonClickHandler({
-                        question, answer, index: i, id,
+                      setCardUnderOperation({
+                        type, question, answer, index: i, id, submit: true,
                       });
                     }}
                   >
@@ -167,7 +173,6 @@ function CardListTable({
               <>
                 {getButton(cardSetModes.ADD, 'Add More Cards')}
                 {getButton(cardSetModes.EDIT, 'Edit Cards')}
-                <SuccessIndicator>{displayMessage || ''}</SuccessIndicator>
               </>
             )}
           </>

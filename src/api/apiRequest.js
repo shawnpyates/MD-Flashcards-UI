@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 import { API_URL } from '../config';
 import apiReqTypes from './apiReqTypes.json';
 
-export const apiReq = async ({ endpoint, method, body }) => {
+const apiReq = async ({ endpoint, method, body }) => {
   const response = await fetch(`${API_URL}${endpoint}`, {
     method,
     body: JSON.stringify(body),
@@ -14,32 +14,30 @@ export const apiReq = async ({ endpoint, method, body }) => {
   return data;
 };
 
-export const useApiFetch = ({ endpoint }) => {
-  console.log('endpoint: ', endpoint);
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    async function fetchUrl() {
-      const resData = await apiReq({ endpoint });
-      setData(resData);
-      setIsLoading(false);
-    }
-    fetchUrl();
-  }, [endpoint]);
-  return [data, isLoading];
-};
-
-export const useApiUpdate = ({ endpoint, method, body }) => {
-  const [res, setRes] = useState({ data: {}, error: null, isLoading: false });
+export const useApiCall = ({
+  endpoint,
+  method,
+  body,
+  dispatch,
+  dispatchType,
+  dispatchPayloadExistingData: existingData,
+}) => {
+  const [res, setRes] = useState({ data: null, error: null, isLoading: false });
   const callApi = useCallback(async () => {
     setRes((prevState) => ({ ...prevState, isLoading: true }));
     try {
       const data = await apiReq({ endpoint, method, body });
-      setRes({ data, isLoading: false, error: null });
+      if (dispatch) {
+        dispatch({
+          type: dispatchType,
+          payload: existingData ? [...existingData, data] : data,
+        });
+      }
+      setRes({ data: dispatch ? { ack: true } : data, isLoading: false, error: null });
     } catch (error) {
       setRes({ data: null, isLoading: false, error });
     }
-  }, [body, endpoint, method]);
+  }, [body, endpoint, method, dispatch, dispatchType, existingData]);
   return [res, callApi];
 };
 
@@ -54,7 +52,7 @@ export const getApiReqData = ({ type, urlParams, data }) => {
         body: { card_group: { name: data.name, user_id: data.userId } },
       });
     case apiReqTypes.GET_CARD_GROUP:
-      return ({ endpoint: `/cardGroups/${urlParams.id}` });
+      return ({ endpoint: `/card_groups/${urlParams.id}` });
     case apiReqTypes.GET_CARD_LIBRARY:
       return ({ endpoint: '/card_sets' });
     case apiReqTypes.CREATE_NEW_CARD_SET:
@@ -88,53 +86,3 @@ export const getApiReqData = ({ type, urlParams, data }) => {
       return null;
   }
 };
-// export const getCurrentUser = () => useApiFetch('/current_user');
-// // const user = await apiCall('/current_user');
-// // return user;
-// // ;
-
-// export const createNewCardGroup = async ({ name, userId }) => {
-//   const group = await apiCall('/card_groups', 'POST', { card_group: { name, user_id: userId } });
-//   return group;
-// };
-
-// export const getCardGroup = async ({ id }) => {
-//   const group = await apiCall(`/card_groups/${id}`);
-//   return group;
-// };
-
-// export const getCardLibrary = async () => {
-//   const sets = await apiCall('/card_sets');
-//   return sets;
-// };
-
-// export const createNewCardSet = async ({ name, groupId }) => {
-//   const set = await apiCall('/card_sets', 'POST', { card_set: { name, card_group_id: groupId } });
-//   return set;
-// };
-
-// export const getCardSet = async ({ id }) => {
-//   const set = await apiCall(`/card_sets/${id}`);
-//   return set;
-// };
-
-// export const createNewCard = async ({ question, answer, cardSetId }) => {
-//   const card = await apiCall('/cards', 'POST', {
-//     card: { question, answer, card_set_id: cardSetId },
-//   });
-//   return card;
-// };
-
-// export const editCard = async ({
-//   id, question, answer, cardSetId,
-// }) => {
-//   const updatedCardSet = await apiCall(`/cards/${id}`, 'PUT', {
-//     card: { question, answer, card_set_id: cardSetId },
-//   });
-//   return updatedCardSet;
-// };
-
-// export const removeCard = async ({ id }) => {
-//   const remainingCards = await apiCall(`/cards/${id}`, 'DELETE');
-//   return remainingCards;
-// };

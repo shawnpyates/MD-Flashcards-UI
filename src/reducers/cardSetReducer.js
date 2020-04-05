@@ -19,7 +19,7 @@ export const actionTypes = {
 };
 
 export const initialState = {
-  originalSet: {},
+  originalSet: null,
   mode: cardSetModes.VIEW,
   displayFirst: displayFirstOptions.QUESTION,
   currentCards: null,

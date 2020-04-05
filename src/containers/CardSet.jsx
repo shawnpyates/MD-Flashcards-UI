@@ -1,8 +1,11 @@
 import React, {
-  useContext, useEffect, useReducer, useRef, useState,
+  useCallback, useContext, useEffect, useReducer, useRef, useState,
 } from 'react';
 import { useParams } from 'react-router-dom';
 import shortid from 'shortid';
+import { ToastContainer, toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 import StudyConfig from './StudyConfig';
 import StudySession from './StudySession';
@@ -20,7 +23,7 @@ import {
 } from '../reducers/cardSetReducer';
 
 
-import { getApiReqData, useApiFetch, useApiUpdate } from '../api/apiRequest';
+import { getApiReqData, useApiCall } from '../api/apiRequest';
 import {
   GET_CARD_SET,
   CREATE_NEW_CARD,
@@ -51,56 +54,84 @@ function CardSet() {
   ] = useReducer(cardSetReducer, initialCardSetState);
 
   const { currentUser } = useContext(UserContext);
-  const isSetFromCurrentUser = currentUser && (originalSet.creator_id === currentUser.id);
+  const isSetFromCurrentUser = (
+    currentUser
+    && (originalSet && originalSet.creator_id === currentUser.id)
+  );
 
   const [temporaryRows, setTemporaryRows] = useState(null);
-  const [displayMessage, setDisplayMessage] = useState(null);
+  const [
+    {
+      type: opType,
+      question: opQuestion,
+      answer: opAnswer,
+      id: opId,
+      index: opIndex,
+      submit: shouldSubmitToApi,
+    },
+    setCardUnderOperation,
+  ] = useState({});
+
   const previousMode = usePrevious(currentMode);
 
-  const [
-    set,
-    isLoading,
-  ] = useApiFetch(getApiReqData({ type: GET_CARD_SET, urlParams: { id: setId } }));
+  const [{ data: newData, isLoading, error: errorOnApiCall }, callApi] = useApiCall({
+    ...getApiReqData({
+      type: opType || GET_CARD_SET,
+      urlParams: { id: opId || setId },
+      data: { question: opQuestion, answer: opAnswer, cardSetId: originalSet && originalSet.id },
+    }),
+    dispatch,
+    dispatchType: opType ? actionTypes.UPDATE_CARDS : actionTypes.SET_ORIGINAL,
+    dispatchPayloadExistingData: opType === CREATE_NEW_CARD && currentCards,
+  });
 
-  const [
-    { data: createdCard, isLoading: isCreating, error: errorOnCreate },
-    createNewCard,
-  ] = useApiUpdate(getApiReqData({
-    type: CREATE_NEW_CARD,
-    data: { question, answer, cardSetId: originalSet.id },
-  }));
+  const handleNewlyCreatedCard = useCallback(() => {
+    setTemporaryRows(
+      temporaryRows.length > 1
+        ? [
+          ...temporaryRows.slice(0, opIndex),
+          ...temporaryRows.slice(opIndex + 1),
+        ] : [getInitialNewRow()],
+    );
+  }, [temporaryRows, opIndex]);
 
-  // const addNewCard = ({ question, answer, index }) => {
-  //   createNewCard({ question, answer, cardSetId: originalSet.id })
-  //     .then((card) => {
-  //       dispatch({ type: actionTypes.UPDATE_CARDS, payload: [...currentCards, card] });
-  //       setTemporaryRows(
-  //         temporaryRows.length > 1
-  //           ? [
-  //             ...temporaryRows.slice(0, index),
-  //             ...temporaryRows.slice(index + 1),
-  //           ] : [getInitialNewRow()],
-  //       );
-  //       setDisplayMessage('Successfully added card!');
-  //     });
-  // };
+  const getSuccessMessage = useCallback(() => {
+    switch (opType) {
+      case CREATE_NEW_CARD:
+        return 'Successfully created card!';
+      case EDIT_CARD:
+        return 'Successfully edited card!';
+      case DELETE_CARD:
+        return 'Successfully deleted card!';
+      default:
+        return '';
+    }
+  }, [opType]);
 
   useEffect(() => {
-    if (set) {
-      dispatch({ type: actionTypes.SET_ORIGINAL, payload: set });
-      if (!set.cards.length) {
-        dispatch({ type: actionTypes.UPDATE_MODE, payload: cardSetModes.ADD });
+    if (newData) {
+      if (opType === CREATE_NEW_CARD) {
+        handleNewlyCreatedCard();
       }
+      if (opType) {
+        toast(getSuccessMessage(), { autoClose: 2000, hideProgressBar: true });
+      }
+      setCardUnderOperation({});
     }
-  }, [set]);
+  }, [newData, opType, getSuccessMessage, handleNewlyCreatedCard]);
 
   useEffect(() => {
-    if (displayMessage) {
-      setTimeout(() => {
-        setDisplayMessage(null);
-      }, 2000);
+    if (!originalSet || shouldSubmitToApi) {
+      callApi();
+      setCardUnderOperation((prevState) => ({ ...prevState, submit: false }));
     }
-  }, [displayMessage]);
+  }, [originalSet, shouldSubmitToApi, callApi]);
+
+  useEffect(() => {
+    if (currentCards && !currentCards.length && currentMode === cardSetModes.VIEW) {
+      dispatch({ type: actionTypes.UPDATE_MODE, payload: cardSetModes.ADD });
+    }
+  }, [currentCards, currentMode]);
 
   useEffect(() => {
     if (currentMode === previousMode) {
@@ -119,6 +150,10 @@ function CardSet() {
     }
   }, [currentMode, previousMode, currentCards]);
 
+  const addNewRow = () => {
+    setTemporaryRows([...temporaryRows, getInitialNewRow()]);
+  };
+
   const handleTextareaChange = ({ target: { name, value } }, index) => {
     const updatedRow = { ...temporaryRows[index], [name]: value };
     setTemporaryRows([
@@ -126,43 +161,6 @@ function CardSet() {
       updatedRow,
       ...temporaryRows.slice(index + 1),
     ]);
-  };
-
-  const addNewRow = () => {
-    setTemporaryRows([...temporaryRows, getInitialNewRow()]);
-  };
-
-  const addNewCard = ({ question, answer, index }) => {
-    createNewCard({ question, answer, cardSetId: originalSet.id })
-      .then((card) => {
-        dispatch({ type: actionTypes.UPDATE_CARDS, payload: [...currentCards, card] });
-        setTemporaryRows(
-          temporaryRows.length > 1
-            ? [
-              ...temporaryRows.slice(0, index),
-              ...temporaryRows.slice(index + 1),
-            ] : [getInitialNewRow()],
-        );
-        setDisplayMessage('Successfully added card!');
-      });
-  };
-
-  const editCard = ({ question, answer, id }) => {
-    editCardApiCall({
-      id, question, answer, cardSetId: originalSet.id,
-    })
-      .then((updatedCards) => {
-        dispatch({ type: actionTypes.UPDATE_CARDS, payload: updatedCards });
-        setDisplayMessage('Successfully edited card!');
-      });
-  };
-
-  const removeCard = (id) => {
-    removeCardApiCall({ id })
-      .then((remainingCards) => {
-        dispatch({ type: actionTypes.UPDATE_CARDS, payload: remainingCards });
-        setDisplayMessage('Successfully deleted card!');
-      });
   };
 
   const renderActiveMode = (mode) => {
@@ -177,9 +175,6 @@ function CardSet() {
             cardSetModes={cardSetModes}
             currentMode={currentMode}
             isSetFromCurrentUser={isSetFromCurrentUser}
-            addNewCard={addNewCard}
-            editCard={editCard}
-            removeCard={removeCard}
             temporaryRows={temporaryRows}
             currentCards={currentCards}
             handleTextareaChange={handleTextareaChange}
@@ -187,12 +182,12 @@ function CardSet() {
             dispatch={dispatch}
             originalSet={originalSet}
             actionTypes={actionTypes}
-            displayMessage={displayMessage}
+            setCardUnderOperation={setCardUnderOperation}
+            isLoading={isLoading}
           />
         );
     }
   };
-
 
   return (
     <CardSetProvider
@@ -203,6 +198,7 @@ function CardSet() {
       dispatch={dispatch}
     >
       {renderActiveMode(currentMode)}
+      <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} />
     </CardSetProvider>
   );
 }

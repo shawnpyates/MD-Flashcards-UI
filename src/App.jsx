@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import styled from 'styled-components';
 
 import CardGroup from './containers/CardGroup';
 import CardLibrary from './containers/CardLibrary';
@@ -13,7 +14,7 @@ import Welcome from './components/Welcome';
 
 import { UserProvider } from './context/userContext';
 
-import { getApiReqData, useApiFetch } from './api/apiRequest';
+import { getApiReqData, useApiCall } from './api/apiRequest';
 import { GET_CURRENT_USER } from './api/apiReqTypes.json';
 
 const useStyles = makeStyles(() => ({
@@ -22,22 +23,44 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const AppContainer = styled.div`
+  ${(props) => (props.isLoading ? 'filter: blur(5px);' : '')}
+`;
+
+const LoadingIndicator = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 5px;
+`;
+
 function App() {
   const { root } = useStyles();
-  const [currentUser, isLoading] = useApiFetch(getApiReqData({ type: GET_CURRENT_USER }));
+  const [{ data: currentUser, isLoading, error: errorLoadingUser }, callApi] = useApiCall(
+    getApiReqData({ type: GET_CURRENT_USER }),
+  );
+
+  useEffect(() => {
+    callApi();
+  }, [callApi]);
 
   return (
-    <div className={root}>
-      <Router>
-        <UserProvider currentUser={currentUser}>
-          <NavBar />
-          <DrawerComponent />
-          {isLoading
-            ? <div>Loading!</div>
-            : (
+    <div>
+      {isLoading && <LoadingIndicator>Loading...</LoadingIndicator>}
+      <AppContainer isLoading={isLoading}>
+        <div className={root}>
+          <Router>
+            <UserProvider currentUser={currentUser} isUserLoading={isLoading}>
+              <NavBar />
+              <DrawerComponent />
+              {currentUser
+            && (
               <Switch>
                 <Route path="/" exact>
-                  {currentUser ? <Main /> : <Welcome />}
+                  <Main />
                 </Route>
                 <Route path="/groups/:id" exact>
                   <CardGroup />
@@ -50,8 +73,11 @@ function App() {
                 </Route>
               </Switch>
             )}
-        </UserProvider>
-      </Router>
+              {(!currentUser && !isLoading) && <Welcome />}
+            </UserProvider>
+          </Router>
+        </div>
+      </AppContainer>
     </div>
   );
 }

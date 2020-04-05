@@ -1,4 +1,5 @@
 import {
+  Table,
   TableRow,
   TextField,
 } from '@material-ui/core';
@@ -11,6 +12,10 @@ import {
   ContentTableCell as CommonContentTableCell,
   EmptyDataIndicator as CommonEmptyDataIndicator,
 } from '../commonStyledComponents';
+
+export const StyledTable = styled(Table)`
+  ${(props) => (props.isLoading ? 'filter: blur(5px);' : '')}
+`;
 
 export const ListContainer = styled(TableContainer)`
   width: 70%;
@@ -33,10 +38,22 @@ export const ListButton = styled(Button)`
 
 export const NewItemContainer = styled.div`
   margin: 30px auto 5px;
+  ${(props) => (props.isCreating ? 'filter: blur(5px);' : '')}
 `;
 
 export const StyledTextField = styled(TextField)`
   margin-right: 25px;
+`;
+
+export const LoadingIndicator = styled.div`
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 5px;
+
+  ${(props) => (props.margintop ? 'margin-top: 100px;' : '')}
 `;
 
 export const HeadTableCell = CommonHeadTableCell;

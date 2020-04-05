@@ -1,13 +1,13 @@
 /* eslint react/prop-types: 0 */
 import React from 'react';
 import {
-  Table,
   TableBody,
   TableHead,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
 
 import {
+  StyledTable,
   ListContainer,
   ListRow,
   ListButton,
@@ -16,6 +16,7 @@ import {
   HeadTableCell,
   ContentTableCell,
   EmptyDataIndicator,
+  LoadingIndicator,
 } from './styledComponents';
 
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
@@ -33,9 +34,11 @@ function CategoryListTable({
   setNewItemName,
   handleChange,
   shouldRenderAddOption,
+  isCreating,
+  isLoading,
 }) {
   const getItemTable = () => (
-    <Table>
+    <StyledTable isLoading={isLoading}>
       <TableHead>
         {dataConfig.map(({ header }) => <HeadTableCell key={header}>{header}</HeadTableCell>)}
       </TableHead>
@@ -50,7 +53,7 @@ function CategoryListTable({
           </ListRow>
         ))}
       </TableBody>
-    </Table>
+    </StyledTable>
   );
 
   return (
@@ -73,21 +76,28 @@ function CategoryListTable({
         )}
         {(newItemName || newItemName === '')
         && (
-          <NewItemContainer>
-            <StyledTextField
-              label={`Name Your New ${capitalize(type)}`}
-              variant="outlined"
-              value={newItemName}
-              onChange={handleChange}
-            />
-            <ListButton
-              newitem
-              disabled={!newItemName}
-              onClick={createNewItem}
-            >
-              Create
-            </ListButton>
-          </NewItemContainer>
+          <div>
+            {isCreating && <LoadingIndicator>Creating...</LoadingIndicator>}
+            <NewItemContainer isCreating={isCreating}>
+              <StyledTextField
+                label={`Name Your New ${capitalize(type)}`}
+                variant="outlined"
+                value={newItemName}
+                onChange={handleChange}
+              />
+              <ListButton
+                newitem
+                disabled={!newItemName}
+                onClick={createNewItem}
+              >
+                Create
+              </ListButton>
+            </NewItemContainer>
+          </div>
+        )}
+        {isLoading
+        && (
+          <LoadingIndicator margintop>Loading...</LoadingIndicator>
         )}
         {(
           items.length

@@ -5,7 +5,7 @@ import { UserContext } from '../context/userContext';
 
 import CategoryListTable from '../components/CategoryListTable/CategoryListTable';
 
-import { getApiReqData, useApiUpdate } from '../api/apiRequest';
+import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { CREATE_NEW_CARD_GROUP } from '../api/apiReqTypes.json';
 
 import { groups as groupsDataConfig } from './dataConfig.json';
@@ -17,9 +17,9 @@ function Main() {
   const { currentUser: { card_groups: cardGroups, name, id: userId } } = useContext(UserContext);
 
   const [
-    { data: { id: createdGroupId }, isLoading: isCreating, error: errorOnCreate },
+    { data: createdGroup, isLoading: isCreating, error: errorOnCreate },
     createNewGroup,
-  ] = useApiUpdate(getApiReqData({
+  ] = useApiCall(getApiReqData({
     type: CREATE_NEW_CARD_GROUP,
     data: { name: newGroupName, userId },
   }));
@@ -28,14 +28,14 @@ function Main() {
     setNewGroupName(value);
   };
 
-  if (groupIdForRedirect || createdGroupId) {
-    return <Redirect to={`/groups/${groupIdForRedirect || createdGroupId}`} />;
+  if (groupIdForRedirect || createdGroup) {
+    return <Redirect to={`/groups/${groupIdForRedirect || createdGroup.id}`} />;
   }
 
   return (
     <CategoryListTable
       title={`${(name && `${name} `) || ''} Card Groups`}
-      type="set"
+      type="group"
       items={cardGroups}
       dataConfig={groupsDataConfig}
       newItemName={newGroupName}
@@ -43,6 +43,7 @@ function Main() {
       createNewItem={createNewGroup}
       handleChange={handleChange}
       handleRowClick={setGroupIdForRedirect}
+      isCreating={isCreating}
       shouldRenderAddOption
     />
   );
