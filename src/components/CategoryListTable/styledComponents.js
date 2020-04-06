@@ -11,6 +11,7 @@ import {
   HeadTableCell as CommonHeadTableCell,
   ContentTableCell as CommonContentTableCell,
   EmptyDataIndicator as CommonEmptyDataIndicator,
+  StyledRowLink as CommonStyledRowLink,
 } from '../commonStyledComponents';
 
 export const StyledTable = styled(Table)`
@@ -61,3 +62,5 @@ export const HeadTableCell = CommonHeadTableCell;
 export const ContentTableCell = CommonContentTableCell;
 
 export const EmptyDataIndicator = CommonEmptyDataIndicator;
+
+export const StyledRowLink = CommonStyledRowLink;

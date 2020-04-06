@@ -22,14 +22,9 @@ import {
   initialState as initialCardSetState,
 } from '../reducers/cardSetReducer';
 
-
 import { getApiReqData, useApiCall } from '../api/apiRequest';
-import {
-  GET_CARD_SET,
-  CREATE_NEW_CARD,
-  EDIT_CARD,
-  DELETE_CARD,
-} from '../api/apiReqTypes.json';
+import { GET_CARD_SET, CREATE_NEW_CARD } from '../api/apiReqTypes.json';
+import { toastIndicatorMessages } from './contentConfig.json';
 
 const getInitialNewRow = () => ({ question: null, answer: null, shortid: shortid.generate() });
 
@@ -72,9 +67,12 @@ function CardSet() {
     setCardUnderOperation,
   ] = useState({});
 
-  const previousMode = usePrevious(currentMode);
-
-  const [{ data: newData, isLoading, error: errorOnApiCall }, callApi] = useApiCall({
+  const [
+    {
+      data: newData, isLoading, error: errorOnApiCall, callId,
+    },
+    callApi,
+  ] = useApiCall({
     ...getApiReqData({
       type: opType || GET_CARD_SET,
       urlParams: { id: opId || setId },
@@ -83,7 +81,11 @@ function CardSet() {
     dispatch,
     dispatchType: opType ? actionTypes.UPDATE_CARDS : actionTypes.SET_ORIGINAL,
     dispatchPayloadExistingData: opType === CREATE_NEW_CARD && currentCards,
+    callId: shortid.generate(),
   });
+
+  const previousMode = usePrevious(currentMode);
+  const previousCallId = usePrevious(callId);
 
   const handleNewlyCreatedCard = useCallback(() => {
     setTemporaryRows(
@@ -95,30 +97,31 @@ function CardSet() {
     );
   }, [temporaryRows, opIndex]);
 
-  const getSuccessMessage = useCallback(() => {
-    switch (opType) {
-      case CREATE_NEW_CARD:
-        return 'Successfully created card!';
-      case EDIT_CARD:
-        return 'Successfully edited card!';
-      case DELETE_CARD:
-        return 'Successfully deleted card!';
-      default:
-        return '';
-    }
-  }, [opType]);
-
   useEffect(() => {
-    if (newData) {
-      if (opType === CREATE_NEW_CARD) {
-        handleNewlyCreatedCard();
-      }
-      if (opType) {
-        toast(getSuccessMessage(), { autoClose: 2000, hideProgressBar: true });
-      }
-      setCardUnderOperation({});
+    if (callId === previousCallId) {
+      return;
     }
-  }, [newData, opType, getSuccessMessage, handleNewlyCreatedCard]);
+    if (opType && !isLoading) {
+      const toastOptions = { autoClose: 2000, hideProgressBar: true };
+      if (newData) {
+        if (opType === CREATE_NEW_CARD) {
+          handleNewlyCreatedCard();
+        }
+        toast(toastIndicatorMessages.cards[opType].success, toastOptions);
+      } else if (errorOnApiCall) {
+        toast(toastIndicatorMessages.cards[opType].failure, toastOptions);
+      }
+    }
+    setCardUnderOperation({});
+  }, [
+    newData,
+    opType,
+    handleNewlyCreatedCard,
+    isLoading,
+    callId,
+    previousCallId,
+    errorOnApiCall,
+  ]);
 
   useEffect(() => {
     if (!originalSet || shouldSubmitToApi) {

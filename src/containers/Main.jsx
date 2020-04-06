@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 import { UserContext } from '../context/userContext';
 
@@ -8,10 +9,9 @@ import CategoryListTable from '../components/CategoryListTable/CategoryListTable
 import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { CREATE_NEW_CARD_GROUP } from '../api/apiReqTypes.json';
 
-import { groups as groupsDataConfig } from './dataConfig.json';
+import { groups as groupsContentConfig, toastIndicatorMessages } from './contentConfig.json';
 
 function Main() {
-  const [groupIdForRedirect, setGroupIdForRedirect] = useState(null);
   const [newGroupName, setNewGroupName] = useState(null);
 
   const { currentUser: { card_groups: cardGroups, name, id: userId } } = useContext(UserContext);
@@ -24,28 +24,39 @@ function Main() {
     data: { name: newGroupName, userId },
   }));
 
+  useEffect(() => {
+    if (errorOnCreate) {
+      toast(
+        toastIndicatorMessages.groups.CREATE_NEW_CARD_GROUP.failure,
+        { autoClose: 2000, hideProgressBar: true },
+      );
+    }
+  }, [errorOnCreate]);
+
   const handleChange = ({ target: { value } }) => {
     setNewGroupName(value);
   };
 
-  if (groupIdForRedirect || createdGroup) {
-    return <Redirect to={`/groups/${groupIdForRedirect || createdGroup.id}`} />;
+  if (createdGroup) {
+    return <Redirect to={`/groups/${createdGroup.id}`} />;
   }
 
   return (
-    <CategoryListTable
-      title={`${(name && `${name} `) || ''} Card Groups`}
-      type="group"
-      items={cardGroups}
-      dataConfig={groupsDataConfig}
-      newItemName={newGroupName}
-      setNewItemName={setNewGroupName}
-      createNewItem={createNewGroup}
-      handleChange={handleChange}
-      handleRowClick={setGroupIdForRedirect}
-      isCreating={isCreating}
-      shouldRenderAddOption
-    />
+    <>
+      <CategoryListTable
+        title={`${(name && `${name} `) || ''} Card Groups`}
+        type="group"
+        items={cardGroups}
+        contentConfig={groupsContentConfig}
+        newItemName={newGroupName}
+        setNewItemName={setNewGroupName}
+        createNewItem={createNewGroup}
+        handleChange={handleChange}
+        isCreating={isCreating}
+        shouldRenderAddOption
+      />
+      <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} />
+    </>
   );
 }
 

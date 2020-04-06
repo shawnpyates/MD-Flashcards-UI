@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import CategoryListTable from '../components/CategoryListTable/CategoryListTable';
+import Error from '../components/Error/Error';
 
 import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { GET_CARD_LIBRARY } from '../api/apiReqTypes.json';
 
-import { library as libraryDataConfig } from './dataConfig.json';
+import { library as librarycontentConfig } from './contentConfig.json';
 
 function CardLibrary() {
   const [selectedCardSetId, setSelectedCardSetId] = useState(null);
@@ -26,18 +27,19 @@ function CardLibrary() {
     return <Redirect to={`/sets/${selectedCardSetId}`} />;
   }
 
+  if (errorOnLoad) {
+    return <Error />;
+  }
+
   return (
-    (cardSets
-    && (
-      <CategoryListTable
-        title="All Card Sets"
-        type="set"
-        items={cardSets}
-        dataConfig={libraryDataConfig}
-        isLoading={isLoading}
-        handleRowClick={setSelectedCardSetId}
-      />
-    )) || <div>Loading...</div>
+    <CategoryListTable
+      title="All Card Sets"
+      type="set"
+      items={cardSets}
+      contentConfig={librarycontentConfig}
+      isLoading={isLoading}
+      handleRowClick={setSelectedCardSetId}
+    />
   );
 }
 

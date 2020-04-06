@@ -39,7 +39,7 @@ const LoadingIndicator = styled.div`
 
 function App() {
   const { root } = useStyles();
-  const [{ data: currentUser, isLoading, error: errorLoadingUser }, callApi] = useApiCall(
+  const [{ data: currentUser, isLoading }, callApi] = useApiCall(
     getApiReqData({ type: GET_CURRENT_USER }),
   );
 
@@ -62,13 +62,13 @@ function App() {
                 <Route path="/" exact>
                   <Main />
                 </Route>
-                <Route path="/groups/:id" exact>
+                <Route path="/groups/:id">
                   <CardGroup />
                 </Route>
-                <Route path="/sets/:id" exact>
+                <Route path="/sets/:id">
                   <CardSet />
                 </Route>
-                <Route path="/library" exact>
+                <Route path="/library">
                   <CardLibrary />
                 </Route>
               </Switch>

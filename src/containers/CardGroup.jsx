@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
 
 import CategoryListTable from '../components/CategoryListTable/CategoryListTable';
+import Error from '../components/Error/Error';
 
 import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { GET_CARD_GROUP, CREATE_NEW_CARD_SET } from '../api/apiReqTypes.json';
 
-import { sets as setsDataConfig } from './dataConfig.json';
+import { sets as setsContentConfig, toastIndicatorMessages } from './contentConfig.json';
 
 function CardGroup() {
   const { id: groupId } = useParams();
-  const [selectedCardSetId, setSelectedCardSetId] = useState(null);
   const [newSetName, setNewSetName] = useState(null);
-
 
   const handleChange = ({ target: { value } }) => {
     setNewSetName(value);
@@ -24,13 +24,20 @@ function CardGroup() {
   ] = useApiCall(getApiReqData({ type: GET_CARD_GROUP, urlParams: { id: groupId } }));
 
   const [
-    { data: newCardSet, isCreating, error: errorOnCreate },
+    { data: createdCardSet, isCreating, error: errorOnCreate },
     createNewCardSet,
   ] = useApiCall(
     getApiReqData({ type: CREATE_NEW_CARD_SET, data: { name: newSetName, groupId } }),
   );
 
-  const idForRedirect = selectedCardSetId || (newCardSet && newCardSet.id);
+  useEffect(() => {
+    if (errorOnCreate) {
+      toast(
+        toastIndicatorMessages.sets.CREATE_NEW_CARD_SET.failure,
+        { autoClose: 2000, hideProgressBar: true },
+      );
+    }
+  }, [errorOnCreate]);
 
   useEffect(() => {
     if (!cardGroup) {
@@ -38,28 +45,31 @@ function CardGroup() {
     }
   }, [fetchGroup, cardGroup]);
 
-  if (idForRedirect) {
-    return <Redirect to={`/sets/${idForRedirect}`} />;
+  if (createdCardSet) {
+    return <Redirect to={`/sets/${createdCardSet.id}`} />;
+  }
+
+  if (errorOnLoad) {
+    return <Error />;
   }
 
   return (
-    (cardGroup
-    && (
+    <>
       <CategoryListTable
-        title={`${(cardGroup.name) || 'All'} Card Sets`}
+        title={`${(cardGroup && cardGroup.name) || 'All'} Card Sets`}
         type="set"
-        items={cardGroup.card_sets}
-        dataConfig={setsDataConfig}
+        items={cardGroup && cardGroup.card_sets}
+        contentConfig={setsContentConfig}
         newItemName={newSetName}
         setNewItemName={setNewSetName}
         createNewItem={createNewCardSet}
         handleChange={handleChange}
-        handleRowClick={setSelectedCardSetId}
         isCreating={isCreating}
         isLoading={isLoading}
         shouldRenderAddOption
       />
-    )) || <div>Loading...</div>
+      <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} />
+    </>
   );
 }
 

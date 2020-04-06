@@ -4,6 +4,7 @@ import {
   TableCell as MaterialUiTableCell,
   TableContainer as MaterialUiTableContainer,
 } from '@material-ui/core';
+import { Link } from 'react-router-dom';
 
 export const TableContainer = styled(MaterialUiTableContainer)`
   overflow: visible;
@@ -37,4 +38,8 @@ export const ContentTableCell = styled(MaterialUiTableCell)`
 export const EmptyDataIndicator = styled.div`
   margin: 35px auto;
   text-align: center;
+`;
+
+export const StyledRowLink = styled(Link)`
+  display: contents;
 `;

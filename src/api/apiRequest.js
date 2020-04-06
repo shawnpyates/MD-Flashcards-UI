@@ -21,6 +21,7 @@ export const useApiCall = ({
   dispatch,
   dispatchType,
   dispatchPayloadExistingData: existingData,
+  callId,
 }) => {
   const [res, setRes] = useState({ data: null, error: null, isLoading: false });
   const callApi = useCallback(async () => {
@@ -33,11 +34,15 @@ export const useApiCall = ({
           payload: existingData ? [...existingData, data] : data,
         });
       }
-      setRes({ data: dispatch ? { ack: true } : data, isLoading: false, error: null });
+      setRes({
+        data: dispatch ? { ack: true } : data, isLoading: false, error: null, callId,
+      });
     } catch (error) {
-      setRes({ data: null, isLoading: false, error });
+      setRes({
+        data: null, isLoading: false, error, callId,
+      });
     }
-  }, [body, endpoint, method, dispatch, dispatchType, existingData]);
+  }, [body, endpoint, method, dispatch, dispatchType, existingData, callId]);
   return [res, callApi];
 };
 

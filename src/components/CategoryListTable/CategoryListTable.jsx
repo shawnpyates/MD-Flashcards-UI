@@ -17,6 +17,7 @@ import {
   ContentTableCell,
   EmptyDataIndicator,
   LoadingIndicator,
+  StyledRowLink,
 } from './styledComponents';
 
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
@@ -27,9 +28,8 @@ function CategoryListTable({
   title,
   type,
   items,
-  dataConfig,
+  contentConfig,
   createNewItem,
-  handleRowClick,
   newItemName,
   setNewItemName,
   handleChange,
@@ -38,22 +38,24 @@ function CategoryListTable({
   isLoading,
 }) {
   const getItemTable = () => (
-    <StyledTable isLoading={isLoading}>
+    <>
       <TableHead>
-        {dataConfig.map(({ header }) => <HeadTableCell key={header}>{header}</HeadTableCell>)}
+        {contentConfig.map(({ header }) => <HeadTableCell key={header}>{header}</HeadTableCell>)}
       </TableHead>
       <TableBody>
         {items.map((row) => (
-          <ListRow key={row.id} onClick={() => handleRowClick(row.id)}>
-            {dataConfig.map(({ key, isTimestamp }) => (
-              <ContentTableCell key={key} columnlength={dataConfig.length}>
-                {isTimestamp ? formatDate(row[key]) : row[key]}
-              </ContentTableCell>
-            ))}
+          <ListRow key={row.id}>
+            <StyledRowLink to={`/${type}s/${row.id}`}>
+              {contentConfig.map(({ key, isTimestamp }) => (
+                <ContentTableCell key={key} columnlength={contentConfig.length}>
+                  {isTimestamp ? formatDate(row[key]) : row[key]}
+                </ContentTableCell>
+              ))}
+            </StyledRowLink>
           </ListRow>
         ))}
       </TableBody>
-    </StyledTable>
+    </>
   );
 
   return (
@@ -95,19 +97,18 @@ function CategoryListTable({
             </NewItemContainer>
           </div>
         )}
-        {isLoading
-        && (
-          <LoadingIndicator margintop>Loading...</LoadingIndicator>
-        )}
-        {(
-          items.length
-            ? getItemTable()
-            : (
-              <EmptyDataIndicator>
-                {`You currently have no card ${type}s. Create a ${type} above to get started!`}
-              </EmptyDataIndicator>
-            )
-        )}
+        {(isLoading) && <LoadingIndicator margintop>Loading...</LoadingIndicator>}
+        <StyledTable isLoading={isLoading}>
+          {(
+            items && items.length
+              ? getItemTable()
+              : (
+                <EmptyDataIndicator>
+                  {`You currently have no card ${type}s. Create a ${type} above to get started!`}
+                </EmptyDataIndicator>
+              )
+          )}
+        </StyledTable>
       </ListContainer>
     </>
   );
