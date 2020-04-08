@@ -39,13 +39,13 @@ const LoadingIndicator = styled.div`
 
 function App() {
   const { root } = useStyles();
-  const [{ data: currentUser, isLoading }, callApi] = useApiCall(
+  const [{ data: currentUser, isLoading }, getCurrentUser] = useApiCall(
     getApiReqData({ type: GET_CURRENT_USER }),
   );
 
   useEffect(() => {
-    callApi();
-  }, [callApi]);
+    getCurrentUser();
+  }, [getCurrentUser]);
 
   return (
     <div>

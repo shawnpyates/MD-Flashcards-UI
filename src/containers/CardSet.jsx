@@ -80,7 +80,7 @@ function CardSet() {
     }),
     dispatch,
     dispatchType: opType ? actionTypes.UPDATE_CARDS : actionTypes.SET_ORIGINAL,
-    dispatchPayloadExistingData: opType === CREATE_NEW_CARD && currentCards,
+    shouldAppendToExistingData: opType === CREATE_NEW_CARD,
     callId: shortid.generate(),
   });
 

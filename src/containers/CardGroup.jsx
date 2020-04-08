@@ -14,10 +14,6 @@ function CardGroup() {
   const { id: groupId } = useParams();
   const [newSetName, setNewSetName] = useState(null);
 
-  const handleChange = ({ target: { value } }) => {
-    setNewSetName(value);
-  };
-
   const [
     { data: cardGroup, isLoading, error: errorOnLoad },
     fetchGroup,
@@ -60,13 +56,15 @@ function CardGroup() {
         type="set"
         items={cardGroup && cardGroup.card_sets}
         contentConfig={setsContentConfig}
-        newItemName={newSetName}
-        setNewItemName={setNewSetName}
-        createNewItem={createNewCardSet}
-        handleChange={handleChange}
+        currentInput={newSetName}
+        updateInput={setNewSetName}
+        submitInput={createNewCardSet}
+        initActionButtonText="Create New Group"
+        submitInputButtonText="Create"
+        inputLabel="Name Your New Group"
         isCreating={isCreating}
         isLoading={isLoading}
-        shouldRenderAddOption
+        emptyDataMessage="You currently have no card sets. Create a set above to get started!"
       />
       <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} />
     </>

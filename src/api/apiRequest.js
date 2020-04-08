@@ -10,8 +10,8 @@ const apiReq = async ({ endpoint, method, body }) => {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
   });
-  const { data } = await response.json();
-  return data;
+  const json = await response.json();
+  return json;
 };
 
 export const useApiCall = ({
@@ -20,29 +20,40 @@ export const useApiCall = ({
   body,
   dispatch,
   dispatchType,
-  dispatchPayloadExistingData: existingData,
+  shouldAppendToExistingData,
   callId,
 }) => {
-  const [res, setRes] = useState({ data: null, error: null, isLoading: false });
+  const [res, setRes] = useState({
+    data: null,
+    metadata: null,
+    error: null,
+    isLoading: false,
+  });
+
   const callApi = useCallback(async () => {
     setRes((prevState) => ({ ...prevState, isLoading: true }));
     try {
-      const data = await apiReq({ endpoint, method, body });
+      const { data, metadata } = await apiReq({ endpoint, method, body });
+      // TODO: does dispatched data also sometimes need to be appended?
       if (dispatch) {
-        dispatch({
-          type: dispatchType,
-          payload: existingData ? [...existingData, data] : data,
-        });
+        dispatch({ type: dispatchType, payload: data });
       }
-      setRes({
-        data: dispatch ? { ack: true } : data, isLoading: false, error: null, callId,
+      setRes((prevState) => {
+        const appendedData = shouldAppendToExistingData ? [...prevState.data, ...data] : data;
+        return {
+          data: dispatch ? { ack: true } : appendedData,
+          metadata,
+          isLoading: false,
+          error: null,
+          callId,
+        };
       });
     } catch (error) {
       setRes({
-        data: null, isLoading: false, error, callId,
+        data: null, metadata: null, isLoading: false, error, callId,
       });
     }
-  }, [body, endpoint, method, dispatch, dispatchType, existingData, callId]);
+  }, [body, endpoint, method, dispatch, dispatchType, callId, shouldAppendToExistingData]);
   return [res, callApi];
 };
 
@@ -59,7 +70,10 @@ export const getApiReqData = ({ type, urlParams, data }) => {
     case apiReqTypes.GET_CARD_GROUP:
       return ({ endpoint: `/card_groups/${urlParams.id}` });
     case apiReqTypes.GET_CARD_LIBRARY:
-      return ({ endpoint: '/card_sets' });
+      return ({
+        endpoint:
+          `/card_sets?cursor_after=${urlParams.nextPaginationId}&match=${urlParams.searchTerm}`,
+      });
     case apiReqTypes.CREATE_NEW_CARD_SET:
       return ({
         endpoint: '/card_sets',

@@ -1,5 +1,5 @@
 /* eslint react/prop-types: 0 */
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   TableBody,
   TableHead,
@@ -20,23 +20,48 @@ import {
   StyledRowLink,
 } from './styledComponents';
 
-const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
+const { documentElement } = document;
+const { addEventListener, innerHeight, removeEventListener } = window;
 
-const capitalize = (str) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
 
 function CategoryListTable({
   title,
   type,
   items,
   contentConfig,
-  createNewItem,
-  newItemName,
-  setNewItemName,
-  handleChange,
-  shouldRenderAddOption,
   isCreating,
   isLoading,
+  fetchMore,
+  nextPaginationId,
+  currentInput,
+  updateInput,
+  submitInput,
+  initActionButtonText,
+  submitInputButtonText,
+  inputLabel,
+  emptyDataMessage,
 }) {
+  const handleChange = ({ target: { value } }) => {
+    updateInput(value);
+  };
+
+  const handleScroll = useCallback(() => {
+    if (
+      innerHeight + documentElement.scrollTop !== documentElement.scrollHeight
+      || !nextPaginationId
+    ) {
+      return;
+    }
+    fetchMore();
+  }, [fetchMore, nextPaginationId]);
+
+  useEffect(() => {
+    addEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
+  useEffect(() => () => removeEventListener('scroll', handleScroll), [handleScroll]);
+
   const getItemTable = () => (
     <>
       <TableHead>
@@ -64,35 +89,32 @@ function CategoryListTable({
         <h3>
           {title}
         </h3>
-        {shouldRenderAddOption
-        && (
-          <ListButton
-            onClick={() => {
-              if (!newItemName) {
-                setNewItemName('');
-              }
-            }}
-          >
-            {`Add a New ${capitalize(type)}`}
-          </ListButton>
-        )}
-        {(newItemName || newItemName === '')
+        <ListButton
+          onClick={() => {
+            if (!currentInput) {
+              updateInput('');
+            }
+          }}
+        >
+          {initActionButtonText}
+        </ListButton>
+        {(currentInput || currentInput === '')
         && (
           <div>
             {isCreating && <LoadingIndicator>Creating...</LoadingIndicator>}
             <NewItemContainer isCreating={isCreating}>
               <StyledTextField
-                label={`Name Your New ${capitalize(type)}`}
+                label={inputLabel}
                 variant="outlined"
-                value={newItemName}
+                value={currentInput}
                 onChange={handleChange}
               />
               <ListButton
                 newitem
-                disabled={!newItemName}
-                onClick={createNewItem}
+                disabled={!currentInput}
+                onClick={submitInput}
               >
-                Create
+                {submitInputButtonText}
               </ListButton>
             </NewItemContainer>
           </div>
@@ -102,11 +124,7 @@ function CategoryListTable({
           {(
             items && items.length
               ? getItemTable()
-              : (
-                <EmptyDataIndicator>
-                  {`You currently have no card ${type}s. Create a ${type} above to get started!`}
-                </EmptyDataIndicator>
-              )
+              : <EmptyDataIndicator>{emptyDataMessage}</EmptyDataIndicator>
           )}
         </StyledTable>
       </ListContainer>

@@ -48,12 +48,15 @@ function Main() {
         type="group"
         items={cardGroups}
         contentConfig={groupsContentConfig}
-        newItemName={newGroupName}
-        setNewItemName={setNewGroupName}
-        createNewItem={createNewGroup}
         handleChange={handleChange}
         isCreating={isCreating}
-        shouldRenderAddOption
+        currentInput={newGroupName}
+        updateInput={setNewGroupName}
+        submitInput={createNewGroup}
+        initActionButtonText="Create New Group"
+        submitInputButtonText="Create"
+        inputLabel="Name Your New Group"
+        emptyDataMessage="You currently have no card groups. Create a group above to get started!"
       />
       <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} />
     </>
