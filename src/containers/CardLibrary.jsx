@@ -10,8 +10,11 @@ import { library as libraryContentConfig } from './contentConfig.json';
 
 function CardLibrary() {
   const [selectedCardSetId, setSelectedCardSetId] = useState(null);
-  const [nextPaginationId, setNextPaginationId] = useState('0');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [{ nextPaginationId, searchTerm, shouldFetch }, setFetchState] = useState({
+    nextPaginationId: '0',
+    searchTerm: '',
+    shouldFetch: false,
+  });
 
   const [
     {
@@ -29,9 +32,12 @@ function CardLibrary() {
     shouldAppendToExistingData: nextPaginationId !== '0',
   });
 
-  const submitSearch = () => {
-    setNextPaginationId('0');
-    fetchSets();
+  const submitSearch = async () => {
+    setFetchState((prev) => ({ ...prev, nextPaginationId: '0', shouldFetch: true }));
+  };
+
+  const updateSearchTerm = (value) => {
+    setFetchState((prev) => ({ ...prev, searchTerm: value }));
   };
 
   useEffect(() => {
@@ -41,8 +47,15 @@ function CardLibrary() {
   }, [fetchSets, cardSets]);
 
   useEffect(() => {
-    if (metadata) {
-      setNextPaginationId(metadata.cursor_after);
+    if (shouldFetch) {
+      fetchSets();
+      setFetchState((prev) => ({ ...prev, shouldFetch: false }));
+    }
+  }, [shouldFetch, fetchSets]);
+
+  useEffect(() => {
+    if (metadata && metadata.cursor_after !== undefined) {
+      setFetchState((prev) => ({ ...prev, nextPaginationId: metadata.cursor_after }));
     }
   }, [metadata]);
 
@@ -65,11 +78,10 @@ function CardLibrary() {
       fetchMore={fetchSets}
       nextPaginationId={nextPaginationId}
       currentInput={searchTerm}
-      updateInput={setSearchTerm}
+      updateInput={updateSearchTerm}
       submitInput={submitSearch}
-      initActionButtonText="Search by name"
       submitInputButtonText="Search"
-      inputLabel="Type Here to Search"
+      inputLabel="Type here to search by name"
       emptyDataMessage="No matching sets were found."
     />
   );

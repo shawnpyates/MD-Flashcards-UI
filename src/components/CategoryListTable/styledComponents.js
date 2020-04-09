@@ -44,6 +44,7 @@ export const NewItemContainer = styled.div`
 
 export const StyledTextField = styled(TextField)`
   margin-right: 25px;
+  width: 250px;
 `;
 
 export const LoadingIndicator = styled.div`

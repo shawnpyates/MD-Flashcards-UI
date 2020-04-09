@@ -1,11 +1,9 @@
 import React from 'react';
+import { ListItem, ListItemText } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+
+import { MenuTitle, StyledDrawer, StyledList } from './styledComponents';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,22 +21,17 @@ const drawerItems = [
     text: 'Flashcard Library',
     link: '/library',
   },
-  {
-    text: 'Settings',
-    link: '/',
-  },
 ];
-
-const StyledDrawer = styled(Drawer)`
-  color: #000;
-`;
 
 function DrawerComponent() {
   const { drawer, toolbar } = useStyles();
   return (
     <StyledDrawer className={drawer} variant="permanent" anchor="left">
       <div className={toolbar} />
-      <List>
+      <StyledList>
+        <ListItem button>
+          <MenuTitle>MD Flashcards</MenuTitle>
+        </ListItem>
         {drawerItems.map(({ text, link }) => (
           <Link to={link} key={text}>
             <ListItem button>
@@ -46,7 +39,7 @@ function DrawerComponent() {
             </ListItem>
           </Link>
         ))}
-      </List>
+      </StyledList>
     </StyledDrawer>
   );
 }

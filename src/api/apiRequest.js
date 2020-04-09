@@ -34,12 +34,11 @@ export const useApiCall = ({
     setRes((prevState) => ({ ...prevState, isLoading: true }));
     try {
       const { data, metadata } = await apiReq({ endpoint, method, body });
-      // TODO: does dispatched data also sometimes need to be appended?
-      if (dispatch) {
-        dispatch({ type: dispatchType, payload: data });
-      }
       setRes((prevState) => {
         const appendedData = shouldAppendToExistingData ? [...prevState.data, ...data] : data;
+        if (dispatch) {
+          dispatch({ type: dispatchType, payload: appendedData });
+        }
         return {
           data: dispatch ? { ack: true } : appendedData,
           metadata,

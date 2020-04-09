@@ -89,15 +89,18 @@ function CategoryListTable({
         <h3>
           {title}
         </h3>
-        <ListButton
-          onClick={() => {
-            if (!currentInput) {
-              updateInput('');
-            }
-          }}
-        >
-          {initActionButtonText}
-        </ListButton>
+        {initActionButtonText
+        && (
+          <ListButton
+            onClick={() => {
+              if (!currentInput) {
+                updateInput('');
+              }
+            }}
+          >
+            {initActionButtonText}
+          </ListButton>
+        )}
         {(currentInput || currentInput === '')
         && (
           <div>

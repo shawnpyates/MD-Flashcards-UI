@@ -11,6 +11,7 @@ import StudyConfig from './StudyConfig';
 import StudySession from './StudySession';
 
 import CardListTable from '../components/CardListTable/CardListTable';
+import Error from '../components/Error/Error';
 
 import { CardSetProvider } from '../context/cardSetContext';
 import { UserContext } from '../context/userContext';
@@ -124,11 +125,14 @@ function CardSet() {
   ]);
 
   useEffect(() => {
+    if (errorOnApiCall && !originalSet) {
+      return;
+    }
     if (!originalSet || shouldSubmitToApi) {
       callApi();
       setCardUnderOperation((prevState) => ({ ...prevState, submit: false }));
     }
-  }, [originalSet, shouldSubmitToApi, callApi]);
+  }, [originalSet, shouldSubmitToApi, callApi, errorOnApiCall]);
 
   useEffect(() => {
     if (currentCards && !currentCards.length && currentMode === cardSetModes.VIEW) {
@@ -165,6 +169,10 @@ function CardSet() {
       ...temporaryRows.slice(index + 1),
     ]);
   };
+
+  if (errorOnApiCall && !originalSet) {
+    return <Error />;
+  }
 
   const renderActiveMode = (mode) => {
     switch (mode) {

@@ -59,9 +59,9 @@ function CardGroup() {
         currentInput={newSetName}
         updateInput={setNewSetName}
         submitInput={createNewCardSet}
-        initActionButtonText="Create New Group"
+        initActionButtonText="Create New Set"
         submitInputButtonText="Create"
-        inputLabel="Name Your New Group"
+        inputLabel="Name Your New Set"
         isCreating={isCreating}
         isLoading={isLoading}
         emptyDataMessage="You currently have no card sets. Create a set above to get started!"
