@@ -15,7 +15,7 @@ import {
 } from '../commonStyledComponents';
 
 export const StyledTable = styled(Table)`
-  ${(props) => (props.isLoading ? 'filter: blur(5px);' : '')}
+  ${(props) => (props.isloading ? 'filter: blur(5px);' : '')}
 `;
 
 export const ListContainer = styled(TableContainer)`

@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 const AppContainer = styled.div`
-  ${(props) => (props.isLoading ? 'filter: blur(5px);' : '')}
+  ${(props) => (props.isloading ? 'filter: blur(5px);' : '')}
 `;
 
 const LoadingIndicator = styled.div`
@@ -50,29 +50,29 @@ function App() {
   return (
     <div>
       {isLoading && <LoadingIndicator>Loading...</LoadingIndicator>}
-      <AppContainer isLoading={isLoading}>
+      <AppContainer isloading={String(isLoading || '')}>
         <div className={root}>
           <Router>
             <UserProvider currentUser={currentUser} isUserLoading={isLoading}>
               <NavBar />
               <DrawerComponent />
               {currentUser
-            && (
-              <Switch>
-                <Route path="/" exact>
-                  <Main />
-                </Route>
-                <Route path="/groups/:id">
-                  <CardGroup />
-                </Route>
-                <Route path="/sets/:id">
-                  <CardSet />
-                </Route>
-                <Route path="/library">
-                  <CardLibrary />
-                </Route>
-              </Switch>
-            )}
+              && (
+                <Switch>
+                  <Route path="/" exact>
+                    <Main />
+                  </Route>
+                  <Route path="/groups/:id">
+                    <CardGroup />
+                  </Route>
+                  <Route path="/sets/:id">
+                    <CardSet />
+                  </Route>
+                  <Route path="/library">
+                    <CardLibrary />
+                  </Route>
+                </Switch>
+              )}
               {(!currentUser && !isLoading) && <Welcome />}
             </UserProvider>
           </Router>

@@ -70,7 +70,7 @@ function CardListTable({
   );
 
   const getCardListTable = () => (
-    <ListTable isLoading={isLoading}>
+    <ListTable isloading={String(isLoading || '')}>
       <TableHead>
         <HeadTableCell>Question</HeadTableCell>
         <HeadTableCell>Answer</HeadTableCell>
@@ -101,7 +101,7 @@ function CardListTable({
           return (
             <>
               <TableRow key={id || key}>
-                <ContentTableCell columnlength={2} islast={isLast}>
+                <ContentTableCell columnlength={2} islast={String(isLast || '')}>
                   <StyledTextarea
                     name="question"
                     value={question}
@@ -109,7 +109,7 @@ function CardListTable({
                     rowsMin={3}
                   />
                 </ContentTableCell>
-                <ContentTableCell columnlength={2} islast={isLast}>
+                <ContentTableCell columnlength={2} islast={String(isLast || '')}>
                   <StyledTextarea
                     name="answer"
                     value={answer}
@@ -175,7 +175,7 @@ function CardListTable({
             && (
               <>
                 {getButton(cardSetModes.ADD, 'Add More Cards')}
-                {getButton(cardSetModes.VIEW, 'Go Back to Main View')}
+                {getButton(cardSetModes.VIEW, 'View Cards')}
                 {getButton(cardSetModes.EDIT, 'Edit Cards')}
               </>
             )}

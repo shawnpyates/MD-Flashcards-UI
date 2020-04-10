@@ -122,7 +122,7 @@ function CategoryListTable({
           </div>
         )}
         {(isLoading) && <LoadingIndicator margintop>Loading...</LoadingIndicator>}
-        <StyledTable isLoading={isLoading}>
+        <StyledTable isloading={String(isLoading || '')}>
           {(
             items && items.length
               ? getItemTable()

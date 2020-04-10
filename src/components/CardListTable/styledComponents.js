@@ -19,7 +19,7 @@ export const ListContainer = styled(TableContainer)`
 
 export const ListTable = styled(Table)`
   width: 95%;
-  ${(props) => (props.isLoading ? 'filter: blur(5px);' : '')}
+  ${(props) => (props.isloading ? 'filter: blur(5px);' : '')}
 `;
 
 export const ListButton = styled(Button)`

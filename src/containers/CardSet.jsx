@@ -134,11 +134,11 @@ function CardSet() {
     if (errorOnApiCall && !originalSet) {
       return;
     }
-    if (!originalSet || shouldSubmitToApi) {
+    if ((shouldSubmitToApi || !originalSet) && !isLoading) {
       callApi();
       setCardUnderOperation((prevState) => ({ ...prevState, submit: false }));
     }
-  }, [originalSet, shouldSubmitToApi, callApi, errorOnApiCall]);
+  }, [originalSet, shouldSubmitToApi, callApi, errorOnApiCall, isLoading]);
 
   useEffect(() => {
     if (currentCards && !currentCards.length && currentMode === cardSetModes.VIEW) {
