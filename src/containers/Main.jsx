@@ -22,7 +22,6 @@ function Main() {
     fetchGroupsByUser,
   ] = useApiCall(getApiReqData({ type: GET_CARD_GROUPS_BY_USER, urlParams: { id: userId } }));
 
-  console.log('groups?? ', cardGroups);
   const [
     { data: createdGroup, isLoading: isCreating, error: errorOnCreate },
     createNewGroup,
