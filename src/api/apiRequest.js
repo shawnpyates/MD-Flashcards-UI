@@ -34,11 +34,11 @@ export const useApiCall = ({
     setRes((prevState) => ({ ...prevState, isLoading: true }));
     try {
       const { data, metadata } = await apiReq({ endpoint, method, body });
+      if (dispatch) {
+        dispatch({ type: dispatchType, payload: data });
+      }
       setRes((prevState) => {
-        const appendedData = shouldAppendToExistingData ? [...prevState.data, ...data] : data;
-        if (dispatch) {
-          dispatch({ type: dispatchType, payload: appendedData });
-        }
+        const appendedData = shouldAppendToExistingData ? prevState.data.concat(data) : data;
         return {
           data: dispatch ? { ack: true } : appendedData,
           metadata,

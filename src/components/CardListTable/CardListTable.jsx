@@ -1,4 +1,3 @@
-/* eslint react/prop-types: 0 */
 import React from 'react';
 import {
   TableBody,
@@ -6,6 +5,7 @@ import {
   TableRow,
 } from '@material-ui/core';
 import ReactMarkdown from 'react-markdown';
+import PropTypes from 'prop-types';
 
 import CodeBlock from '../CodeBlock';
 
@@ -149,13 +149,16 @@ function CardListTable({
   );
 
   const getButton = (mode, text) => (
-    <ListButton
-      onClick={() => {
-        dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
-      }}
-    >
-      {text}
-    </ListButton>
+    mode !== currentMode
+    && (
+      <ListButton
+        onClick={() => {
+          dispatch({ type: actionTypes.UPDATE_MODE, payload: mode });
+        }}
+      >
+        {text}
+      </ListButton>
+    )
   );
 
   return (
@@ -172,6 +175,7 @@ function CardListTable({
             && (
               <>
                 {getButton(cardSetModes.ADD, 'Add More Cards')}
+                {getButton(cardSetModes.VIEW, 'Go Back to Main View')}
                 {getButton(cardSetModes.EDIT, 'Edit Cards')}
               </>
             )}
@@ -188,5 +192,27 @@ function CardListTable({
     </ListContainer>
   );
 }
+
+CardListTable.defaultProps = {
+  isSetFromCurrentUser: false,
+  temporaryRows: null,
+  currentCards: null,
+  originalSet: null,
+};
+
+CardListTable.propTypes = {
+  cardSetModes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currentMode: PropTypes.string.isRequired,
+  isSetFromCurrentUser: PropTypes.bool,
+  temporaryRows: PropTypes.arrayOf(PropTypes.string),
+  currentCards: PropTypes.arrayOf(PropTypes.any),
+  handleTextareaChange: PropTypes.func.isRequired,
+  addNewRow: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  originalSet: PropTypes.objectOf(PropTypes.any),
+  actionTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setCardUnderOperation: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+};
 
 export default CardListTable;

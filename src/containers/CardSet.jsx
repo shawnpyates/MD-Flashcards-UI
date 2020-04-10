@@ -68,6 +68,13 @@ function CardSet() {
     setCardUnderOperation,
   ] = useState({});
 
+  const getDispatchType = () => {
+    if (opType) {
+      return opType === CREATE_NEW_CARD ? actionTypes.ADD_CARD : actionTypes.UPDATE_CARDS;
+    }
+    return actionTypes.SET_ORIGINAL;
+  };
+
   const [
     {
       data: newData, isLoading, error: errorOnApiCall, callId,
@@ -80,8 +87,7 @@ function CardSet() {
       data: { question: opQuestion, answer: opAnswer, cardSetId: originalSet && originalSet.id },
     }),
     dispatch,
-    dispatchType: opType ? actionTypes.UPDATE_CARDS : actionTypes.SET_ORIGINAL,
-    shouldAppendToExistingData: opType === CREATE_NEW_CARD,
+    dispatchType: getDispatchType(),
     callId: shortid.generate(),
   });
 

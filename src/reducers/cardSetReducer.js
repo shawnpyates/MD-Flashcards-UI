@@ -15,6 +15,7 @@ export const actionTypes = {
   SET_ORIGINAL: 'setOriginal',
   UPDATE_MODE: 'updateMode',
   UPDATE_CARDS: 'updateCards',
+  ADD_CARD: 'addCard',
   SET_STUDY_SESSION_CONFIG: 'setStudySessionConfig',
 };
 
@@ -44,6 +45,12 @@ export const cardSetReducer = (state, { type, payload }) => {
       return {
         ...state,
         currentCards: payload,
+      };
+    }
+    case actionTypes.ADD_CARD: {
+      return {
+        ...state,
+        currentCards: [...state.currentCards, payload],
       };
     }
     case actionTypes.SET_STUDY_SESSION_CONFIG: {

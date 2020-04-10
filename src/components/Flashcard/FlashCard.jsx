@@ -1,6 +1,6 @@
-/* eslint react/prop-types: 0 */
-import React from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { CardContent } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 import ReactMarkdown from 'react-markdown';
 
@@ -18,6 +18,15 @@ import {
   StyledRightChev,
 } from './styledComponents';
 
+const { addEventListener, removeEventListener } = window;
+
+const keyCodes = {
+  SPACE: 32,
+  ARROW_LEFT: 37,
+  ARROW_RIGHT: 39,
+  R: 82,
+};
+
 function Flashcard({
   originalSet,
   localState,
@@ -28,6 +37,46 @@ function Flashcard({
   repeatCardAtEnd,
   goBackToList,
 }) {
+  const isFirstCard = localState.cardIndex === 0;
+  const isLastCard = localState.cardIndex === allCards.length - 1;
+
+  const flipButtonEl = useRef(null);
+
+  const handleFlipButtonClick = () => {
+    // if left focussed after click, flipCard will be called twice on spacebar keydown
+    flipButtonEl.current.blur();
+    flipCard();
+  };
+
+  const handleKeydown = useCallback(({ keyCode }) => {
+    switch (keyCode) {
+      case keyCodes.SPACE:
+        flipCard();
+        break;
+      case keyCodes.ARROW_LEFT:
+        if (!isFirstCard) {
+          handleShift('left');
+        }
+        break;
+      case keyCodes.ARROW_RIGHT:
+        if (!isLastCard) {
+          handleShift('right');
+        }
+        break;
+      case keyCodes.R:
+        repeatCardAtEnd();
+        break;
+      default:
+        break;
+    }
+    return null;
+  }, [isFirstCard, isLastCard, flipCard, handleShift, repeatCardAtEnd]);
+
+  useEffect(() => {
+    addEventListener('keydown', handleKeydown);
+    return () => removeEventListener('keydown', handleKeydown);
+  }, [handleKeydown]);
+
   return (
     <StudyCard>
       <CardContent>
@@ -36,7 +85,7 @@ function Flashcard({
         </h4>
         <div>
           <ChevContainer>
-            {localState.cardIndex !== 0
+            {!isFirstCard
             && (
               <StyledLeftChev
                 onClick={() => {
@@ -54,7 +103,7 @@ function Flashcard({
             </QuestionContent>
           </QuestionContentContainer>
           <ChevContainer>
-            {localState.cardIndex !== allCards.length - 1
+            {!isLastCard
             && (
               <StyledRightChev
                 onClick={() => {
@@ -65,11 +114,18 @@ function Flashcard({
           </ChevContainer>
         </div>
         <StyledActionsContainer>
-          <FlipButton onClick={flipCard} size="small" side="left">Flip</FlipButton>
+          <FlipButton
+            ref={flipButtonEl}
+            onClick={handleFlipButtonClick}
+            size="small"
+            side="left"
+          >
+            Flip [space]
+          </FlipButton>
         </StyledActionsContainer>
         <StyledActionsContainer>
           <ActionButton size="small" side="left" onClick={repeatCardAtEnd}>
-            Repeat This Card Later
+            Repeat This Card Later [r]
           </ActionButton>
           <ActionButton size="small" side="right" onClick={goBackToList}>
             Go Back To Card List
@@ -79,5 +135,16 @@ function Flashcard({
     </StudyCard>
   );
 }
+
+Flashcard.propTypes = {
+  originalSet: PropTypes.objectOf(PropTypes.any).isRequired,
+  localState: PropTypes.objectOf(PropTypes.any).isRequired,
+  allCards: PropTypes.arrayOf(PropTypes.any).isRequired,
+  handleShift: PropTypes.func.isRequired,
+  currentCard: PropTypes.objectOf(PropTypes.any).isRequired,
+  flipCard: PropTypes.func.isRequired,
+  repeatCardAtEnd: PropTypes.func.isRequired,
+  goBackToList: PropTypes.func.isRequired,
+};
 
 export default Flashcard;

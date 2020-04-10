@@ -1,10 +1,10 @@
-/* eslint react/prop-types: 0 */
 import React, { useCallback, useEffect } from 'react';
 import {
   TableBody,
   TableHead,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
+import PropTypes from 'prop-types';
 
 import {
   StyledTable,
@@ -58,9 +58,8 @@ function CategoryListTable({
 
   useEffect(() => {
     addEventListener('scroll', handleScroll);
+    return () => removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
-
-  useEffect(() => () => removeEventListener('scroll', handleScroll), [handleScroll]);
 
   const getItemTable = () => (
     <>
@@ -68,7 +67,7 @@ function CategoryListTable({
         {contentConfig.map(({ header }) => <HeadTableCell key={header}>{header}</HeadTableCell>)}
       </TableHead>
       <TableBody>
-        {items.map((row) => (
+        {items.map((row, i) => (
           <ListRow key={row.id}>
             <StyledRowLink to={`/${type}s/${row.id}`}>
               {contentConfig.map(({ key, isTimestamp }) => (
@@ -134,5 +133,28 @@ function CategoryListTable({
     </>
   );
 }
+
+CategoryListTable.defaultProps = {
+  nextPaginationId: null,
+  currentInput: null,
+};
+
+CategoryListTable.propTypes = {
+  title: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  contentConfig: PropTypes.arrayOf(PropTypes.object).isRequired,
+  isCreating: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  fetchMore: PropTypes.func.isRequired,
+  nextPaginationId: PropTypes.string,
+  currentInput: PropTypes.string,
+  updateInput: PropTypes.func.isRequired,
+  submitInput: PropTypes.func.isRequired,
+  initActionButtonText: PropTypes.func.isRequired,
+  submitInputButtonText: PropTypes.func.isRequired,
+  inputLabel: PropTypes.string.isRequired,
+  emptyDataMessage: PropTypes.string.isRequired,
+};
 
 export default CategoryListTable;

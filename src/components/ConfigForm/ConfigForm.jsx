@@ -6,6 +6,7 @@ import {
   FormLabel,
   Radio,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
 import {
   ConfigContainer,
@@ -62,5 +63,15 @@ function ConfigForm({
     </ConfigContainer>
   );
 }
+
+ConfigForm.propTypes = {
+  handleButtonClick: PropTypes.func.isRequired,
+  formState: PropTypes.objectOf(PropTypes.string).isRequired,
+  originalSet: PropTypes.objectOf(PropTypes.any).isRequired,
+  handleChange: PropTypes.func.isRequired,
+  cardSetModes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  displayFirstOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  orderOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 export default ConfigForm;

@@ -17,7 +17,6 @@ const CHEV_STYLES_MIXIN = `
 
 export const StudyCard = styled(Card)`
   width: 60%;
-  min-height: 150px;
   position: absolute;
   top: 100px;
   left: 50%;
@@ -29,12 +28,11 @@ export const StudyCard = styled(Card)`
 export const QuestionContentContainer = styled.div`
   margin: auto 30px;
   display: inline-table;
-  width: 70%;
-  min-height: 40px;
+  width: 90%;
+  min-height: 130px;
   border: 1px solid #F0F0F0;
-  vertical-align: top;
   padding: 5px;
-  background-color: ${(props) => (props.isShaded ? '#F0F0F0' : '#FFF')};
+  background-color: ${(props) => (props.isShaded ? '#FBFBFB' : '#FFF')};
 `;
 
 export const StyledActionsContainer = styled(CardActions)`
@@ -63,13 +61,12 @@ export const FlipButton = styled(Button)`
 export const QuestionContent = styled(Typography)`
   vertical-align: middle;
   display: table-cell;
+  font-size: 20px;
 `;
 
 
 export const ChevContainer = styled.div`
-  width: ${CHEV_SIZE};
-  display: inline-block;
-  vertical-align: top;
+  height: 60px;
 `;
 
 export const StyledLeftChev = styled(ChevronLeft)`
