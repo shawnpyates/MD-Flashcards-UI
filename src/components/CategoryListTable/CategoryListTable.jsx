@@ -22,6 +22,7 @@ import {
 
 const { documentElement } = document;
 const { addEventListener, innerHeight, removeEventListener } = window;
+const SCROLL_OFFSET = 20;
 
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
 
@@ -48,7 +49,7 @@ function CategoryListTable({
 
   const handleScroll = useCallback(() => {
     if (
-      innerHeight + documentElement.scrollTop !== documentElement.scrollHeight
+      innerHeight + documentElement.scrollTop < documentElement.scrollHeight - SCROLL_OFFSET
       || !nextPaginationId
     ) {
       return;

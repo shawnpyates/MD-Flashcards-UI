@@ -73,7 +73,15 @@ function App() {
                   </Route>
                 </Switch>
               )}
-              {(!currentUser && !isLoading) && <Welcome />}
+              {(!currentUser && !isLoading)
+              && (
+                <Switch>
+                  <Route path="/library">
+                    <CardLibrary />
+                  </Route>
+                  <Route component={Welcome} />
+                </Switch>
+              )}
             </UserProvider>
           </Router>
         </div>

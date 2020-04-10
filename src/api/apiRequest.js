@@ -66,6 +66,8 @@ export const getApiReqData = ({ type, urlParams, data }) => {
         method: 'POST',
         body: { card_group: { name: data.name, user_id: data.userId } },
       });
+    case apiReqTypes.GET_CARD_GROUPS_BY_USER:
+      return ({ endpoint: `/users/${urlParams.id}/card_groups` });
     case apiReqTypes.GET_CARD_GROUP:
       return ({ endpoint: `/card_groups/${urlParams.id}` });
     case apiReqTypes.GET_CARD_LIBRARY:

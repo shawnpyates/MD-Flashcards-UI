@@ -10,6 +10,7 @@ export const StyledAppBar = styled(AppBar)`
   background-color: #060;
   z-index: 5000;
   height: 60px;
+  position: fixed;
 `;
 
 export const StyledButton = styled(Button)`
