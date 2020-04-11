@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import {
   TableBody,
   TableHead,
 } from '@material-ui/core';
 import dayjs from 'dayjs';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import PropTypes from 'prop-types';
 
 import {
@@ -19,10 +20,6 @@ import {
   LoadingIndicator,
   StyledRowLink,
 } from './styledComponents';
-
-const { documentElement } = document;
-const { addEventListener, innerHeight, removeEventListener } = window;
-const SCROLL_OFFSET = 20;
 
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
 
@@ -47,21 +44,6 @@ function CategoryListTable({
     updateInput(value);
   };
 
-  const handleScroll = useCallback(() => {
-    if (
-      innerHeight + documentElement.scrollTop < documentElement.scrollHeight - SCROLL_OFFSET
-      || !nextPaginationId
-    ) {
-      return;
-    }
-    fetchMore();
-  }, [fetchMore, nextPaginationId]);
-
-  useEffect(() => {
-    addEventListener('scroll', handleScroll);
-    return () => removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
   const getItemTable = () => (
     <>
       <TableHead>
@@ -83,7 +65,7 @@ function CategoryListTable({
     </>
   );
 
-  return (
+  const contentToRender = (
     <>
       <ListContainer>
         <h3>
@@ -132,6 +114,21 @@ function CategoryListTable({
         </StyledTable>
       </ListContainer>
     </>
+  );
+
+  return (
+    nextPaginationId && (items && items.length)
+      ? (
+        <InfiniteScroll
+          dataLength={items.length}
+          next={fetchMore}
+          hasMore
+        >
+          {contentToRender}
+        </InfiniteScroll>
+      ) : (
+        contentToRender
+      )
   );
 }
 
