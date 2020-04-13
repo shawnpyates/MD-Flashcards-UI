@@ -16,7 +16,7 @@ const CHEV_STYLES_MIXIN = `
 `;
 
 export const StudyCard = styled(Card)`
-  width: 60%;
+  min-width: 60%;
   position: absolute;
   top: 100px;
   left: 50%;
@@ -63,7 +63,6 @@ export const QuestionContent = styled(Typography)`
   display: table-cell;
   font-size: 20px;
 `;
-
 
 export const ChevContainer = styled.div`
   height: 60px;
