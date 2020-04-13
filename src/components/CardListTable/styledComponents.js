@@ -42,6 +42,7 @@ export const SideContent = styled.td`
 
 export const StyledTextarea = styled(TextareaAutosize)`
   width: 100%;
+  font-size: 16px;
 `;
 
 export const StyledDeleteIcon = styled(DeleteForever)`
