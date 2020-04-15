@@ -2,10 +2,10 @@ import {
   Button,
   Card,
   CardActions,
-  Typography,
 } from '@material-ui/core';
 import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import styled from 'styled-components';
+import ReactMarkdown from 'react-markdown';
 
 const CHEV_SIZE = '60px';
 
@@ -17,6 +17,8 @@ const CHEV_STYLES_MIXIN = `
 
 export const StudyCard = styled(Card)`
   min-width: 60%;
+  max-width: 75%;
+  overflow-x: scroll;
   position: absolute;
   top: 100px;
   left: 50%;
@@ -31,7 +33,7 @@ export const QuestionContentContainer = styled.div`
   width: 90%;
   min-height: 130px;
   border: 1px solid #F0F0F0;
-  padding: 5px;
+  padding: 20px;
   background-color: ${(props) => (props.isShaded ? '#FBFBFB' : '#FFF')};
 `;
 
@@ -58,7 +60,7 @@ export const FlipButton = styled(Button)`
   }
 `;
 
-export const QuestionContent = styled(Typography)`
+export const StyledMarkdown = styled(ReactMarkdown)`
   vertical-align: middle;
   display: table-cell;
   font-size: 20px;

@@ -6,6 +6,7 @@ import {
 import dayjs from 'dayjs';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 
 import {
   StyledTable,
@@ -18,7 +19,6 @@ import {
   ContentTableCell,
   EmptyDataIndicator,
   LoadingIndicator,
-  StyledRowLink,
 } from './styledComponents';
 
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
@@ -40,6 +40,8 @@ function CategoryListTable({
   inputLabel,
   emptyDataMessage,
 }) {
+  const history = useHistory();
+
   const handleChange = ({ target: { value } }) => {
     updateInput(value);
   };
@@ -47,18 +49,23 @@ function CategoryListTable({
   const getItemTable = () => (
     <>
       <TableHead>
-        {contentConfig.map(({ header }) => <HeadTableCell key={header}>{header}</HeadTableCell>)}
+        <tr>
+          {contentConfig.map(({ header }) => <HeadTableCell key={header}>{header}</HeadTableCell>)}
+        </tr>
       </TableHead>
       <TableBody>
-        {items.map((row, i) => (
-          <ListRow key={row.id}>
-            <StyledRowLink to={`/${type}s/${row.id}`}>
-              {contentConfig.map(({ key, isTimestamp }) => (
-                <ContentTableCell key={key} columnlength={contentConfig.length}>
-                  {isTimestamp ? formatDate(row[key]) : row[key]}
-                </ContentTableCell>
-              ))}
-            </StyledRowLink>
+        {items.map((row) => (
+          <ListRow
+            key={row.id}
+            onClick={() => {
+              history.push(`/${type}s/${row.id}`);
+            }}
+          >
+            {contentConfig.map(({ key, isTimestamp }) => (
+              <ContentTableCell key={key} columnlength={contentConfig.length}>
+                {isTimestamp ? formatDate(row[key]) : row[key]}
+              </ContentTableCell>
+            ))}
           </ListRow>
         ))}
       </TableBody>
@@ -95,7 +102,7 @@ function CategoryListTable({
                 onChange={handleChange}
               />
               <ListButton
-                newitem
+                newitem="true"
                 disabled={!currentInput}
                 onClick={submitInput}
               >
@@ -105,13 +112,14 @@ function CategoryListTable({
           </div>
         )}
         {(isLoading) && <LoadingIndicator margintop>Loading...</LoadingIndicator>}
-        <StyledTable isloading={String(isLoading || '')}>
-          {(
-            items && items.length
-              ? getItemTable()
-              : <EmptyDataIndicator>{emptyDataMessage}</EmptyDataIndicator>
+        {items && items.length
+          ? (
+            <StyledTable isloading={String(isLoading || '')}>
+              {getItemTable()}
+            </StyledTable>
+          ) : (
+            <EmptyDataIndicator>{emptyDataMessage}</EmptyDataIndicator>
           )}
-        </StyledTable>
       </ListContainer>
     </>
   );
@@ -135,22 +143,26 @@ function CategoryListTable({
 CategoryListTable.defaultProps = {
   nextPaginationId: null,
   currentInput: null,
+  fetchMore: null,
+  initActionButtonText: null,
+  isCreating: false,
+  items: null,
 };
 
 CategoryListTable.propTypes = {
   title: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  items: PropTypes.arrayOf(PropTypes.object),
   contentConfig: PropTypes.arrayOf(PropTypes.object).isRequired,
-  isCreating: PropTypes.bool.isRequired,
+  isCreating: PropTypes.bool,
   isLoading: PropTypes.bool.isRequired,
-  fetchMore: PropTypes.func.isRequired,
+  fetchMore: PropTypes.func,
   nextPaginationId: PropTypes.string,
   currentInput: PropTypes.string,
   updateInput: PropTypes.func.isRequired,
   submitInput: PropTypes.func.isRequired,
-  initActionButtonText: PropTypes.func.isRequired,
-  submitInputButtonText: PropTypes.func.isRequired,
+  initActionButtonText: PropTypes.string,
+  submitInputButtonText: PropTypes.string.isRequired,
   inputLabel: PropTypes.string.isRequired,
   emptyDataMessage: PropTypes.string.isRequired,
 };
