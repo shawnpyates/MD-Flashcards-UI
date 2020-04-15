@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { CardContent } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
-import ReactMarkdown from 'react-markdown';
-
 import CodeBlock from '../CodeBlock';
 
 import {
@@ -12,7 +10,7 @@ import {
   StyledActionsContainer,
   ActionButton,
   FlipButton,
-  QuestionContent,
+  StyledMarkdown,
   ChevContainer,
   StyledLeftChev,
   StyledRightChev,
@@ -27,9 +25,15 @@ const keyCodes = {
   R: 82,
 };
 
+const capitalize = (str) => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+
 function Flashcard({
   originalSet,
-  localState,
+  localState: {
+    cardIndex,
+    currentSide,
+    shouldShowRepeatOption,
+  },
   allCards,
   handleShift,
   currentCard,
@@ -37,13 +41,13 @@ function Flashcard({
   repeatCardAtEnd,
   goBackToList,
 }) {
-  const isFirstCard = localState.cardIndex === 0;
-  const isLastCard = localState.cardIndex === allCards.length - 1;
+  const isFirstCard = cardIndex === 0;
+  const isLastCard = cardIndex === allCards.length - 1;
 
   const flipButtonEl = useRef(null);
 
   const handleFlipButtonClick = () => {
-    // if left focussed after click, flipCard will be called twice on spacebar keydown
+    // if kept focussed after click, flipCard will be called twice on spacebar keydown
     flipButtonEl.current.blur();
     flipCard();
   };
@@ -64,13 +68,15 @@ function Flashcard({
         }
         break;
       case keyCodes.R:
-        repeatCardAtEnd();
+        if (shouldShowRepeatOption) {
+          repeatCardAtEnd();
+        }
         break;
       default:
         break;
     }
     return null;
-  }, [isFirstCard, isLastCard, flipCard, handleShift, repeatCardAtEnd]);
+  }, [isFirstCard, isLastCard, flipCard, handleShift, repeatCardAtEnd, shouldShowRepeatOption]);
 
   useEffect(() => {
     addEventListener('keydown', handleKeydown);
@@ -81,7 +87,7 @@ function Flashcard({
     <StudyCard>
       <CardContent>
         <h4>
-          {`${originalSet.name}: Question ${localState.cardIndex + 1}/${allCards.length}`}
+          {`${originalSet.name}: ${currentSide && capitalize(currentSide)} ${cardIndex + 1}/${allCards.length}`}
         </h4>
         <div>
           <ChevContainer>
@@ -94,13 +100,11 @@ function Flashcard({
               />
             )}
           </ChevContainer>
-          <QuestionContentContainer isShaded={localState.currentSide === 'answer'}>
-            <QuestionContent variant="body2" component="p">
-              <ReactMarkdown
-                source={currentCard && currentCard[localState.currentSide]}
-                renderers={{ code: CodeBlock }}
-              />
-            </QuestionContent>
+          <QuestionContentContainer isShaded={currentSide === 'answer'}>
+            <StyledMarkdown
+              source={currentCard && currentCard[currentSide]}
+              renderers={{ code: CodeBlock }}
+            />
           </QuestionContentContainer>
           <ChevContainer>
             {!isLastCard
@@ -124,7 +128,12 @@ function Flashcard({
           </FlipButton>
         </StyledActionsContainer>
         <StyledActionsContainer>
-          <ActionButton size="small" side="left" onClick={repeatCardAtEnd}>
+          <ActionButton
+            size="small"
+            side="left"
+            disabled={!shouldShowRepeatOption}
+            onClick={repeatCardAtEnd}
+          >
             Repeat This Card Later [r]
           </ActionButton>
           <ActionButton size="small" side="right" onClick={goBackToList}>
@@ -136,12 +145,16 @@ function Flashcard({
   );
 }
 
+Flashcard.defaultProps = {
+  currentCard: null,
+};
+
 Flashcard.propTypes = {
   originalSet: PropTypes.objectOf(PropTypes.any).isRequired,
   localState: PropTypes.objectOf(PropTypes.any).isRequired,
   allCards: PropTypes.arrayOf(PropTypes.any).isRequired,
   handleShift: PropTypes.func.isRequired,
-  currentCard: PropTypes.objectOf(PropTypes.any).isRequired,
+  currentCard: PropTypes.objectOf(PropTypes.any),
   flipCard: PropTypes.func.isRequired,
   repeatCardAtEnd: PropTypes.func.isRequired,
   goBackToList: PropTypes.func.isRequired,

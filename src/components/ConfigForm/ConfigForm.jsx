@@ -69,9 +69,9 @@ ConfigForm.propTypes = {
   formState: PropTypes.objectOf(PropTypes.string).isRequired,
   originalSet: PropTypes.objectOf(PropTypes.any).isRequired,
   handleChange: PropTypes.func.isRequired,
-  cardSetModes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  displayFirstOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
-  orderOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  cardSetModes: PropTypes.objectOf(PropTypes.string).isRequired,
+  displayFirstOptions: PropTypes.objectOf(PropTypes.string).isRequired,
+  orderOptions: PropTypes.objectOf(PropTypes.string).isRequired,
 };
 
 export default ConfigForm;

@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 
 import Flashcard from '../components/Flashcard/FlashCard';
 
@@ -20,12 +21,13 @@ function StudySession() {
   const [localState, setLocalState] = useState({
     cardIndex: null,
     currentSide: null,
+    shouldShowRepeatOption: true,
   });
 
   const currentCard = allCards[localState.cardIndex];
 
   useEffect(() => {
-    setLocalState({ cardIndex: 0, currentSide: displayFirst });
+    setLocalState((prev) => ({ ...prev, cardIndex: 0, currentSide: displayFirst }));
 
     return () => {
       dispatch({ type: actionTypes.UPDATE_CARDS, payload: originalSet.cards });
@@ -33,18 +35,24 @@ function StudySession() {
   }, [displayFirst, dispatch, originalSet.cards]);
 
   const flipCard = () => {
-    setLocalState({
-      ...localState,
+    setLocalState((prev) => ({
+      ...prev,
       currentSide: Object.values(cardSides).find((side) => side !== localState.currentSide),
-    });
+    }));
   };
   const handleShift = (direction) => {
     setLocalState({
       currentSide: displayFirst,
       cardIndex: localState.cardIndex + (direction === 'right' ? 1 : -1),
+      shouldShowRepeatOption: true,
     });
   };
   const repeatCardAtEnd = () => {
+    toast(
+      'Will repeat card later!',
+      { autoClose: 2000, hideProgressBar: true },
+    );
+    setLocalState((prev) => ({ ...prev, shouldShowRepeatOption: false }));
     dispatch({ type: actionTypes.UPDATE_CARDS, payload: [...allCards, currentCard] });
   };
   const goBackToList = () => {
@@ -52,16 +60,19 @@ function StudySession() {
   };
 
   return (
-    <Flashcard
-      originalSet={originalSet}
-      localState={localState}
-      allCards={allCards}
-      handleShift={handleShift}
-      currentCard={currentCard}
-      flipCard={flipCard}
-      repeatCardAtEnd={repeatCardAtEnd}
-      goBackToList={goBackToList}
-    />
+    <>
+      <Flashcard
+        originalSet={originalSet}
+        localState={localState}
+        allCards={allCards}
+        handleShift={handleShift}
+        currentCard={currentCard}
+        flipCard={flipCard}
+        repeatCardAtEnd={repeatCardAtEnd}
+        goBackToList={goBackToList}
+      />
+      <ToastContainer position={toast.POSITION.BOTTOM_RIGHT} />
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
 
@@ -56,32 +56,23 @@ function App() {
             <UserProvider currentUser={currentUser} isUserLoading={isLoading}>
               <NavBar />
               <DrawerComponent />
-              {currentUser
-              && (
-                <Switch>
-                  <Route path="/" exact>
-                    <Main />
-                  </Route>
-                  <Route path="/groups/:id">
-                    <CardGroup />
-                  </Route>
-                  <Route path="/sets/:id">
-                    <CardSet />
-                  </Route>
-                  <Route path="/library">
-                    <CardLibrary />
-                  </Route>
-                </Switch>
-              )}
-              {(!currentUser && !isLoading)
-              && (
-                <Switch>
-                  <Route path="/library">
-                    <CardLibrary />
-                  </Route>
-                  <Route component={Welcome} />
-                </Switch>
-              )}
+              <Switch>
+                <Route path="/" exact>
+                  {currentUser ? <Main /> : (!isLoading && <Welcome />)}
+                </Route>
+                <Route path="/groups/:id">
+                  {currentUser ? <CardGroup /> : (!isLoading && <Welcome />)}
+                </Route>
+                <Route path="/sets/:id">
+                  <CardSet />
+                </Route>
+                <Route path="/library">
+                  <CardLibrary />
+                </Route>
+                <Route>
+                  <Redirect to="/" />
+                </Route>
+              </Switch>
             </UserProvider>
           </Router>
         </div>

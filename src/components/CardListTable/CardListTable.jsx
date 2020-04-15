@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
   TableBody,
   TableHead,
@@ -72,8 +72,10 @@ function CardListTable({
   const getCardListTable = () => (
     <ListTable isloading={String(isLoading || '')}>
       <TableHead>
-        <HeadTableCell>Question</HeadTableCell>
-        <HeadTableCell>Answer</HeadTableCell>
+        <tr>
+          <HeadTableCell>Question</HeadTableCell>
+          <HeadTableCell>Answer</HeadTableCell>
+        </tr>
       </TableHead>
       <TableBody>
         {([cardSetModes.ADD, cardSetModes.EDIT].includes(currentMode) && temporaryRows)
@@ -99,12 +101,12 @@ function CardListTable({
           );
 
           return (
-            <>
-              <TableRow key={id || key}>
+            <Fragment key={id || key}>
+              <TableRow>
                 <ContentTableCell columnlength={2} islast={String(isLast || '')}>
                   <StyledTextarea
                     name="question"
-                    value={question}
+                    value={question || ''}
                     onChange={(ev) => handleTextareaChange(ev, i)}
                     rowsMin={3}
                   />
@@ -112,14 +114,14 @@ function CardListTable({
                 <ContentTableCell columnlength={2} islast={String(isLast || '')}>
                   <StyledTextarea
                     name="answer"
-                    value={answer}
+                    value={answer || ''}
                     onChange={(ev) => handleTextareaChange(ev, i)}
                     rowsMin={3}
                   />
                 </ContentTableCell>
                 <SideContent>
                   <ListButton
-                    createnewitem
+                    createnewitem="true"
                     disabled={!question || !answer || isUnchanged}
                     onClick={() => {
                       setCardUnderOperation({
@@ -134,13 +136,13 @@ function CardListTable({
               {shouldDisplayNewRowButton
               && (
                 <TableRow key="addnew">
-                  <ContentTableCell columnlength={2} fornewrowbutton>
-                    <ListButton addnewrow onClick={addNewRow}>+ New Row</ListButton>
+                  <ContentTableCell columnlength={2} fornewrowbutton="true">
+                    <ListButton addnewrow="true" onClick={addNewRow}>+ New Row</ListButton>
                   </ContentTableCell>
                   <ContentTableCell columnlength={2} />
                 </TableRow>
               )}
-            </>
+            </Fragment>
           );
         })}
         {currentCards && renderCurrentCards(currentCards)}
@@ -201,16 +203,16 @@ CardListTable.defaultProps = {
 };
 
 CardListTable.propTypes = {
-  cardSetModes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  cardSetModes: PropTypes.objectOf(PropTypes.string).isRequired,
   currentMode: PropTypes.string.isRequired,
   isSetFromCurrentUser: PropTypes.bool,
-  temporaryRows: PropTypes.arrayOf(PropTypes.string),
+  temporaryRows: PropTypes.arrayOf(PropTypes.object),
   currentCards: PropTypes.arrayOf(PropTypes.any),
   handleTextareaChange: PropTypes.func.isRequired,
   addNewRow: PropTypes.func.isRequired,
   dispatch: PropTypes.func.isRequired,
   originalSet: PropTypes.objectOf(PropTypes.any),
-  actionTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  actionTypes: PropTypes.objectOf(PropTypes.string).isRequired,
   setCardUnderOperation: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
 };
