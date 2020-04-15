@@ -10,24 +10,34 @@ import { UserContext } from '../../context/userContext';
 import { AUTH_URL } from '../../config';
 
 import {
+  ButtonContainer,
   StyledAppBar,
   StyledButton,
   StyledGitHubIcon,
+  StyledFaIcon,
 } from './styledComponents';
 
 function NavBar() {
   const { currentUser, isUserLoading } = useContext(UserContext);
-  const { endpoint, buttonContent } = (
+  const buttons = (
     currentUser
-      ? { endpoint: '/signout', buttonContent: 'Sign Out' }
-      : {
+      ? [{ endpoint: '/signout', content: 'Sign Out' }]
+      : [{
+        endpoint: '/google',
+        content:
+        <>
+          <StyledFaIcon className="fab fa-google" />
+          Sign in with Google
+        </>,
+      },
+      {
         endpoint: '/github',
-        buttonContent:
+        content:
         <>
           <StyledGitHubIcon />
-          Login with Github
+          Sign in with Github
         </>,
-      }
+      }]
   );
   return (
     <StyledAppBar position="static">
@@ -37,11 +47,15 @@ function NavBar() {
         </Typography>
         {!isUserLoading
         && (
-          <StyledButton>
-            <Link href={`${AUTH_URL}${endpoint}`}>
-              {buttonContent}
-            </Link>
-          </StyledButton>
+          <ButtonContainer>
+            {buttons.map(({ endpoint, content }) => (
+              <StyledButton key={endpoint}>
+                <Link href={`${AUTH_URL}${endpoint}`}>
+                  {content}
+                </Link>
+              </StyledButton>
+            ))}
+          </ButtonContainer>
         )}
       </Toolbar>
     </StyledAppBar>
