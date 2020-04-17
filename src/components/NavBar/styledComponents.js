@@ -10,7 +10,7 @@ import { BUTTON_ICON_MIXIN } from '../../styles/mixins';
 
 export const ButtonContainer = styled.div`
   position: absolute;
-  right: 5%;
+  right: 2%;
 `;
 
 export const StyledAppBar = styled(AppBar)`
@@ -37,6 +37,7 @@ export const StyledButton = styled(Button)`
   @media only screen and (max-width: 800px) {
     background-color: #060;
     margin: 0;
+    min-width: 10px;
 
     &:hover {
       background-color: initial;

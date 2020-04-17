@@ -5,11 +5,10 @@ import styled from 'styled-components';
 import { TABLE_POSITION_MIXIN } from '../styles/mixins';
 
 const WelcomeContainer = styled(Container)`
-  min-width: 715px;
   width: 70%;
   text-align: center;
   border: 1px solid #F0F0F0;
-  padding: 50px;
+  padding: 30px;
   color: #060;
   background-color: #FBFBFB;
 
