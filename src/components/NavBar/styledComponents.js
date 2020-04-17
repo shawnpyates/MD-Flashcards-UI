@@ -4,11 +4,11 @@ import {
   AppBar,
   Button,
 } from '@material-ui/core';
-import { GitHub } from '@material-ui/icons';
+import { GitHub, Menu } from '@material-ui/icons';
 
 export const ButtonContainer = styled.div`
   position: absolute;
-  right: 60px;
+  right: 5%;
 `;
 
 export const StyledAppBar = styled(AppBar)`
@@ -42,4 +42,13 @@ export const StyledGitHubIcon = styled(GitHub)`
 export const StyledFaIcon = styled.i`
   height: 16px;
   margin-right: 8px;
+`;
+
+export const StyledMenuIcon = styled(Menu)`
+  margin-left: 20px;
+  cursor: pointer;
+
+  @media only screen and (min-width: 1040px) {
+    visibility: collapse;
+  }
 `;

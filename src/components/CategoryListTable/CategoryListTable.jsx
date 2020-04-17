@@ -112,14 +112,16 @@ function CategoryListTable({
           </div>
         )}
         {(isLoading) && <LoadingIndicator margintop>Loading...</LoadingIndicator>}
-        {items && items.length
+        {items
+        && (items.length
           ? (
             <StyledTable isloading={String(isLoading || '')}>
               {getItemTable()}
             </StyledTable>
           ) : (
             <EmptyDataIndicator>{emptyDataMessage}</EmptyDataIndicator>
-          )}
+          )
+        )}
       </ListContainer>
     </>
   );

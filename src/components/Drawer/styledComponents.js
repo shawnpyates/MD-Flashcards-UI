@@ -3,6 +3,10 @@ import styled from 'styled-components';
 
 export const StyledDrawer = styled(Drawer)`
   color: #000;
+
+  @media only screen and (max-width: 1040px) {
+    visibility: collapse;
+  }
 `;
 
 export const MenuTitle = styled.h4`

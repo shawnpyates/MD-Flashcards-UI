@@ -17,6 +17,8 @@ import { UserProvider } from './context/userContext';
 import { getApiReqData, useApiCall } from './api/apiRequest';
 import { GET_CURRENT_USER } from './api/apiReqTypes.json';
 
+import { CENTER_ELEMENT_MIXIN } from './styles/mixins';
+
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -29,12 +31,11 @@ const AppContainer = styled.div`
 
 const LoadingIndicator = styled.div`
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   padding: 10px;
   border: 1px solid #000;
   border-radius: 5px;
+
+  ${CENTER_ELEMENT_MIXIN}
 `;
 
 function App() {

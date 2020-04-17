@@ -6,24 +6,14 @@ import { Link } from 'react-router-dom';
 import { MenuTitle, StyledDrawer, StyledList } from './styledComponents';
 import { UserContext } from '../../context/userContext';
 
+import { menu as menuItems } from '../../containers/contentConfig.json';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
   toolbar: theme.mixins.toolbar,
 }));
-
-const drawerItems = [
-  {
-    text: 'My Flashcards',
-    link: '/',
-    requiresCurrentUser: true,
-  },
-  {
-    text: 'Flashcard Library',
-    link: '/library',
-  },
-];
 
 function DrawerComponent() {
   const { currentUser } = useContext(UserContext);
@@ -35,7 +25,7 @@ function DrawerComponent() {
         <ListItem button>
           <MenuTitle>MD Flashcards</MenuTitle>
         </ListItem>
-        {drawerItems.map(({ text, link, requiresCurrentUser }) => (
+        {menuItems.map(({ text, link, requiresCurrentUser }) => (
           (currentUser || !requiresCurrentUser)
           && (
             <Link to={link} key={text}>

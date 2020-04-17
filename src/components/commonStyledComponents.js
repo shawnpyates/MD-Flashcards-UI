@@ -6,11 +6,13 @@ import {
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
+import { TABLE_POSITION_MIXIN } from '../styles/mixins';
+
 export const TableContainer = styled(MaterialUiTableContainer)`
   overflow: visible;
-  position: absolute;
-  top: 100px;
-  left: 250px;
+  min-width: 650px;
+
+  ${TABLE_POSITION_MIXIN};
 `;
 
 export const Button = styled(MaterialUiButton)`

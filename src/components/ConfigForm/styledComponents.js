@@ -1,16 +1,10 @@
-import {
-  Container,
-  RadioGroup,
-} from '@material-ui/core';
+import { RadioGroup } from '@material-ui/core';
 import styled from 'styled-components';
 
-import { Button as CommonButton } from '../commonStyledComponents';
+import { Button as CommonButton, TableContainer } from '../commonStyledComponents';
 
-export const ConfigContainer = styled(Container)`
+export const ConfigContainer = styled(TableContainer)`
   width: 70%;
-  position: absolute;
-  top: 100px;
-  left: 250px;
 `;
 
 export const StyledRadioGroup = styled(RadioGroup)`
