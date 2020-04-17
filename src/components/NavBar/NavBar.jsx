@@ -20,6 +20,7 @@ import { menu as menuItems } from '../../containers/contentConfig.json';
 
 import {
   ButtonContainer,
+  ResponsiveP,
   StyledAppBar,
   StyledButton,
   StyledGitHubIcon,
@@ -69,7 +70,7 @@ function NavBar() {
         content:
         <>
           <StyledFaIcon className="fab fa-google" />
-          Sign in with Google
+          <ResponsiveP>Sign in with Google</ResponsiveP>
         </>,
       },
       {
@@ -77,7 +78,7 @@ function NavBar() {
         content:
         <>
           <StyledGitHubIcon />
-          Sign in with Github
+          <ResponsiveP>Sign in with Github</ResponsiveP>
         </>,
       }]
   );
