@@ -71,5 +71,16 @@
         "failure": "Network error. Failed to create new group."
       }
     }
-  }
+  },
+  "menu": [
+    {
+      "text": "My Flashcards",
+      "link": "/",
+      "requiresCurrentUser": true
+    },
+    {
+      "text": "Flashcard Library",
+      "link": "/library"
+    }
+  ]
 }
