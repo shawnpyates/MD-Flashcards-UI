@@ -74,13 +74,17 @@
   },
   "menu": [
     {
-      "text": "My Flashcards",
-      "link": "/",
-      "requiresCurrentUser": true
+      "text": "About",
+      "link": "/about"
     },
     {
       "text": "Flashcard Library",
       "link": "/library"
+    },
+    {
+      "text": "My Flashcards",
+      "link": "/",
+      "requiresCurrentUser": true
     }
   ]
 }

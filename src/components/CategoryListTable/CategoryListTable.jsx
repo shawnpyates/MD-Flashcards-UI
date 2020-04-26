@@ -22,6 +22,7 @@ import {
 } from './styledComponents';
 
 const formatDate = (date) => dayjs(date).format('YYYY/MM/DD');
+const ENTER_KEY = 13;
 
 function CategoryListTable({
   title,
@@ -44,6 +45,12 @@ function CategoryListTable({
 
   const handleChange = ({ target: { value } }) => {
     updateInput(value);
+  };
+
+  const handleKeyUp = ({ keyCode }) => {
+    if (keyCode === ENTER_KEY && !!currentInput) {
+      submitInput();
+    }
   };
 
   const getItemTable = () => (
@@ -100,6 +107,7 @@ function CategoryListTable({
                 variant="outlined"
                 value={currentInput}
                 onChange={handleChange}
+                onKeyUp={handleKeyUp}
               />
               <ListButton
                 newitem="true"
