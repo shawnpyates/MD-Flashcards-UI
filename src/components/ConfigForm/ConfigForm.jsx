@@ -57,8 +57,8 @@ function ConfigForm({
         </StyledRadioGroup>
       </FormControl>
       <div>
-        {getButton(cardSetModes.STUDY, 'Start!')}
         {getButton(cardSetModes.VIEW, 'Go Back to Card List')}
+        {getButton(cardSetModes.STUDY, 'Start!')}
       </div>
     </ConfigContainer>
   );

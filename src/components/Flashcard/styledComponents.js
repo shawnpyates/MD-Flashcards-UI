@@ -64,6 +64,11 @@ export const StyledMarkdown = styled(ReactMarkdown)`
   vertical-align: middle;
   display: table-cell;
   font-size: 20px;
+
+  & > ul {
+    text-align: left;
+    display: inline-block;
+  }
 `;
 
 export const ChevContainer = styled.div`
