@@ -13,3 +13,8 @@ export const CENTER_ELEMENT_MIXIN = `
   left: 50%;
   transform: translate(-50%, -50%);
 `;
+
+export const BUTTON_ICON_MIXIN = `
+  margin-right: 8px;
+  vertical-align: middle;
+`;

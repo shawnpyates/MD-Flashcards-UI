@@ -6,15 +6,16 @@ import {
 } from '@material-ui/core';
 import { GitHub, Menu } from '@material-ui/icons';
 
+import { BUTTON_ICON_MIXIN } from '../../styles/mixins';
+
 export const ButtonContainer = styled.div`
   position: absolute;
-  right: 5%;
+  right: 2%;
 `;
 
 export const StyledAppBar = styled(AppBar)`
   background-color: #060;
   z-index: 5000;
-  height: 60px;
   position: fixed;
 `;
 
@@ -32,16 +33,36 @@ export const StyledButton = styled(Button)`
       text-decoration: none;
     }
   }
+
+  @media only screen and (max-width: 800px) {
+    background-color: #060;
+    margin: 0;
+    min-width: 10px;
+
+    &:hover {
+      background-color: initial;
+    }
+  }
 `;
 
 export const StyledGitHubIcon = styled(GitHub)`
   font-size: 16px;
-  margin-right: 8px;
+
+  ${BUTTON_ICON_MIXIN}
+
+  @media only screen and (max-width: 800px) {
+    color: #FFF;
+  }
 `;
 
 export const StyledFaIcon = styled.i`
   height: 16px;
-  margin-right: 8px;
+
+  ${BUTTON_ICON_MIXIN}
+
+  @media only screen and (max-width: 800px) {
+    color: white;
+  }
 `;
 
 export const StyledMenuIcon = styled(Menu)`
@@ -52,3 +73,12 @@ export const StyledMenuIcon = styled(Menu)`
     visibility: collapse;
   }
 `;
+
+export const ResponsiveP = styled.p`
+  display: inline;
+
+  @media only screen and (max-width: 800px) {
+    display: none;
+  }
+`;
+
