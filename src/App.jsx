@@ -11,6 +11,7 @@ import Main from './containers/Main';
 import DrawerComponent from './components/Drawer/Drawer';
 import NavBar from './components/NavBar/NavBar';
 import Welcome from './components/Welcome';
+import About from './components/About';
 
 import { UserProvider } from './context/userContext';
 
@@ -60,6 +61,9 @@ function App() {
               <Switch>
                 <Route path="/" exact>
                   {currentUser ? <Main /> : (!isLoading && <Welcome />)}
+                </Route>
+                <Route path="/about">
+                  <About />
                 </Route>
                 <Route path="/groups/:id">
                   {currentUser ? <CardGroup /> : (!isLoading && <Welcome />)}
