@@ -2,13 +2,13 @@
 
 Frontend for a web application (wrthat enables users to create flashcards that support markdown and code snippets.
 
-Demo version available here.
+Demo version [available here](https://md-flashcards-ui.herokuapp.com/).
 
-Currently running against an Elixir API.
+Currently running against an [Elixir/Phoenix API](https://github.com/shawnpyates/MD-Flashcards).
 
 #### To run locally:
 
-1. You will need to run a local API using the instructions here.
+1. You will need to run a local API [using the instructions here](https://github.com/shawnpyates/MD-Flashcards/blob/master/README.md).
 
 1. Install dependencies: `npm install`
 
