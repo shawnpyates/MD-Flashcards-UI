@@ -1,4 +1,22 @@
 {
+  "about": {
+    "title": "About MD Flashcards",
+    "description": [
+      "MD Flashcards can be used for making all types of text-based flashcards, but specifically it's geared towards learning new software technologies with its support for formatted code snippets.",
+      "To create a code-formatted flashcard, enclose your code block in triple backticks (```) while writing the name the enclosed language immediately following the opening series of backticks as follows:"
+    ],
+    "editorImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1588095696/md-flashcards/formatting_raw.png",
+    "cardImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1588096223/md-flashcards/formatted_card_b.png"
+  },
+  "welcome": {
+    "title": "Welcome to MD FLashcards!",
+    "description": [
+      "Make web-based flashcards that support markdown and code snippets.",
+      "Log in to get started or checkout our public Flashcard Library."
+    ],
+    "sampleCardQuestionImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1586553269/md-flashcards/sampleCardQuestion.png",
+    "sampleCardAnswerImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1586553274/md-flashcards/sampleCardAnswer.png"
+  },
   "groups": [
     {
       "header": "Name",

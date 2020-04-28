@@ -3,16 +3,16 @@ import Container from '@material-ui/core/Container';
 import styled from 'styled-components';
 
 import { TABLE_POSITION_MIXIN } from '../styles/mixins';
-import { welcome as content } from '../containers/contentConfig.json';
+import { about as content } from '../containers/contentConfig.json';
 
 const {
   title,
   description,
-  sampleCardQuestionImageUrl,
-  sampleCardAnswerImageUrl,
+  editorImageUrl,
+  cardImageUrl,
 } = content;
 
-const WelcomeContainer = styled(Container)`
+const AboutContainer = styled(Container)`
   width: 70%;
   text-align: center;
   border: 1px solid #F0F0F0;
@@ -21,30 +21,35 @@ const WelcomeContainer = styled(Container)`
   background-color: #FBFBFB;
 
   ${TABLE_POSITION_MIXIN}
+
+  & p {
+    color: #000;
+  }
 `;
 
 const StyledImage = styled.img`
-  height: 50%;
-  width: 50%;
+  max-height: ${(props) => (props.iswide ? '160px' : '300px')};
   border 2px solid #F0F0F0;
   margin: 10px auto;
+  display: block;
 `;
 
-function Welcome() {
+function About() {
   return (
-    <WelcomeContainer>
+    <AboutContainer>
       <h1>{title}</h1>
-      {description.map((line) => <h3>{line}</h3>)}
+      {description.map((line) => <p>{line}</p>)}
       <StyledImage
-        src={sampleCardQuestionImageUrl}
-        alt="sample card question"
+        src={editorImageUrl}
+        alt="editor image URL"
+        iswide="true"
       />
       <StyledImage
-        src={sampleCardAnswerImageUrl}
-        alt="sample card answer"
+        src={cardImageUrl}
+        alt="card image URL"
       />
-    </WelcomeContainer>
+    </AboutContainer>
   );
 }
 
-export default Welcome;
+export default About;
