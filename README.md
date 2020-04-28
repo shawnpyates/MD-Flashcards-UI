@@ -1,8 +1,8 @@
 ## MD Flashcards (UI)
 
-Frontend for a web application (wrthat enables users to create flashcards that support markdown and code snippets.
+Frontend for a web application that enables users to create flashcards that support markdown and code snippets.
 
-Demo version [available here](https://md-flashcards-ui.herokuapp.com/).
+Demo version [available here](https://md-flashcards-ui.herokuapp.com/) (it may take a minute to load).
 
 Currently running against an [Elixir/Phoenix API](https://github.com/shawnpyates/MD-Flashcards).
 
