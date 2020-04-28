@@ -9,7 +9,7 @@
     "cardImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1588096223/md-flashcards/formatted_card_b.png"
   },
   "welcome": {
-    "title": "Welcome to MD FLashcards!",
+    "title": "Welcome to MD Flashcards!",
     "description": [
       "Make web-based flashcards that support markdown and code snippets.",
       "Log in to get started or checkout our public Flashcard Library."
