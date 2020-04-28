@@ -1,6 +1,7 @@
 import React, {
   useContext, useEffect, useRef, useState,
 } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import {
   Grow,
@@ -11,7 +12,6 @@ import {
   MenuItem,
   Link,
   Toolbar,
-  Typography,
 } from '@material-ui/core';
 
 import { UserContext } from '../../context/userContext';
@@ -26,12 +26,14 @@ import {
   StyledGitHubIcon,
   StyledFaIcon,
   StyledMenuIcon,
+  StyledTitle,
 } from './styledComponents';
 
 function NavBar() {
   const { currentUser, isUserLoading } = useContext(UserContext);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const anchorRef = useRef(null);
+  const history = useHistory();
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -85,9 +87,15 @@ function NavBar() {
   return (
     <StyledAppBar position="static">
       <Toolbar>
-        <Typography variant="h5" color="inherit">
+        <StyledTitle
+          variant="h5"
+          color="inherit"
+          onClick={() => {
+            history.push('/');
+          }}
+        >
           MD Flashcards
-        </Typography>
+        </StyledTitle>
         <StyledMenuIcon
           ref={anchorRef}
           aria-controls={(isMenuOpen && 'menu-list-grow') || null}

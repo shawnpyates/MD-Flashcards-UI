@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {
   AppBar,
   Button,
+  Typography,
 } from '@material-ui/core';
 import { GitHub, Menu } from '@material-ui/icons';
 
@@ -80,4 +81,8 @@ export const ResponsiveP = styled.p`
   @media only screen and (max-width: 800px) {
     display: none;
   }
+`;
+
+export const StyledTitle = styled(Typography)`
+  cursor: pointer;
 `;
