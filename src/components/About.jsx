@@ -38,7 +38,7 @@ function About() {
   return (
     <AboutContainer>
       <h1>{title}</h1>
-      {description.map((line) => <p>{line}</p>)}
+      {description.map((line) => <p key={line}>{line}</p>)}
       <StyledImage
         src={editorImageUrl}
         alt="editor image URL"

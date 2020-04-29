@@ -14,8 +14,8 @@
       "Make web-based flashcards that support markdown and code snippets.",
       "Log in to get started or checkout our public Flashcard Library."
     ],
-    "sampleCardQuestionImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1586553269/md-flashcards/sampleCardQuestion.png",
-    "sampleCardAnswerImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1586553274/md-flashcards/sampleCardAnswer.png"
+    "sampleCardQuestionImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1588118223/md-flashcards/sample-q.png",
+    "sampleCardAnswerImageUrl": "https://res.cloudinary.com/dcupoxygs/image/upload/v1588118223/md-flashcards/sample-a.png"
   },
   "groups": [
     {
