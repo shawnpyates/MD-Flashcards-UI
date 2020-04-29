@@ -76,6 +76,7 @@ export const StyledMenuIcon = styled(Menu)`
 
 export const ResponsiveP = styled.p`
   display: inline;
+  text-transform: none;
 
   @media only screen and (max-width: 800px) {
     display: none;
