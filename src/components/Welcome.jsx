@@ -34,7 +34,7 @@ function Welcome() {
   return (
     <WelcomeContainer>
       <h1>{title}</h1>
-      {description.map((line) => <h3>{line}</h3>)}
+      {description.map((line) => <h3 key={line}>{line}</h3>)}
       <StyledImage
         src={sampleCardQuestionImageUrl}
         alt="sample card question"
