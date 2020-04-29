@@ -14,13 +14,12 @@ import DrawerComponent from './components/Drawer/Drawer';
 import NavBar from './components/NavBar/NavBar';
 import Welcome from './components/Welcome';
 import About from './components/About';
+import LoadingIndicator from './components/LoadingIndicator/LoadingIndicator';
 
 import { UserProvider } from './context/userContext';
 
 import { getApiReqData, useApiCall } from './api/apiRequest';
 import { GET_CURRENT_USER } from './api/apiReqTypes.json';
-
-import { CENTER_ELEMENT_MIXIN } from './styles/mixins';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -30,15 +29,6 @@ const useStyles = makeStyles(() => ({
 
 const AppContainer = styled.div`
   ${(props) => (props.isloading ? 'filter: blur(5px);' : '')}
-`;
-
-const LoadingIndicator = styled.div`
-  position: fixed;
-  padding: 10px;
-  border: 1px solid #000;
-  border-radius: 5px;
-
-  ${CENTER_ELEMENT_MIXIN}
 `;
 
 function App() {
@@ -53,7 +43,7 @@ function App() {
 
   return (
     <div>
-      {isLoading && <LoadingIndicator>Loading...</LoadingIndicator>}
+      {isLoading && <LoadingIndicator />}
       <AppContainer isloading={String(isLoading || '')}>
         <div className={root}>
           <Router>
