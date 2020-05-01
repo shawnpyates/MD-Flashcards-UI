@@ -45,7 +45,7 @@ const StyledTextarea = styled(TextareaAutosize)`
 
 const SuccessIndicator = styled.span`
   margin-left: 20px;
-  color: #060;
+  color: #2E7D32;
   font-weight: 700;
 `;
 

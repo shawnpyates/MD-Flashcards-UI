@@ -1,11 +1,15 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import {
+  Checkbox,
+  FormControlLabel,
   TableBody,
   TableHead,
   TableRow,
 } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import ReactMarkdown from 'react-markdown';
 import PropTypes from 'prop-types';
+import { green } from '@material-ui/core/colors';
 
 import CodeBlock from '../CodeBlock';
 
@@ -19,6 +23,8 @@ import {
   HeadTableCell,
   ContentTableCell,
   EmptyDataIndicator,
+  CsvUploadContainer,
+  CsvUploadInput,
 } from './styledComponents';
 
 import {
@@ -26,6 +32,16 @@ import {
   EDIT_CARD,
   DELETE_CARD,
 } from '../../api/apiReqTypes.json';
+
+const GreenCheckbox = withStyles({
+  root: {
+    color: green[800],
+    '&$checked': {
+      color: green[800],
+    },
+  },
+  checked: {},
+})((props) => <Checkbox color="default" {...props} />);
 
 function CardListTable({
   cardSetModes,
@@ -39,8 +55,12 @@ function CardListTable({
   originalSet,
   actionTypes,
   setCardUnderOperation,
+  stagedFileForUpload,
+  setStagedFileForUpload,
+  importCsv,
   isLoading,
 }) {
+  const [shouldDisplayCsvOptions, setShouldDisplayCsvOptions] = useState(false);
   const renderCurrentCards = (cards) => (
     cards.map(({ id, question, answer }) => (
       <TableRow key={id}>
@@ -163,6 +183,22 @@ function CardListTable({
     )
   );
 
+  const getUploadButton = () => (
+    <CsvUploadContainer>
+      <CsvUploadInput
+        accept="text/csv"
+        id="csv-upload"
+        type="file"
+        onChange={(ev) => {
+          setStagedFileForUpload(ev.target.files[0]);
+        }}
+      />
+      <ListButton onClick={importCsv} ishidden={!stagedFileForUpload}>
+        Upload CSV
+      </ListButton>
+    </CsvUploadContainer>
+  );
+
   return (
     <ListContainer>
       <h3>
@@ -184,6 +220,23 @@ function CardListTable({
           </>
         )) || ''}
       </div>
+      {currentMode === cardSetModes.ADD
+      && (
+        <CsvUploadContainer>
+          <FormControlLabel
+            control={(
+              <GreenCheckbox
+                checked={shouldDisplayCsvOptions}
+                onChange={() => {
+                  setShouldDisplayCsvOptions((prev) => !prev);
+                }}
+              />
+            )}
+            label="I want to upload cards from a CSV."
+          />
+          {shouldDisplayCsvOptions && getUploadButton()}
+        </CsvUploadContainer>
+      )}
       {getCardListTable()}
       {(currentCards && !currentCards.length
       && (
@@ -200,6 +253,7 @@ CardListTable.defaultProps = {
   temporaryRows: null,
   currentCards: null,
   originalSet: null,
+  stagedFileForUpload: null,
 };
 
 CardListTable.propTypes = {
@@ -215,6 +269,9 @@ CardListTable.propTypes = {
   actionTypes: PropTypes.objectOf(PropTypes.string).isRequired,
   setCardUnderOperation: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  stagedFileForUpload: PropTypes.objectOf(PropTypes.any),
+  setStagedFileForUpload: PropTypes.func.isRequired,
+  importCsv: PropTypes.func.isRequired,
 };
 
 export default CardListTable;

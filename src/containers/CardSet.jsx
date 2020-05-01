@@ -4,6 +4,7 @@ import React, {
 import { useParams } from 'react-router-dom';
 import shortid from 'shortid';
 import { ToastContainer, toast } from 'react-toastify';
+import { parse } from 'papaparse';
 
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -24,7 +25,7 @@ import {
 } from '../reducers/cardSetReducer';
 
 import { getApiReqData, useApiCall } from '../api/apiRequest';
-import { GET_CARD_SET, CREATE_NEW_CARD } from '../api/apiReqTypes.json';
+import { GET_CARD_SET, CREATE_NEW_CARD, BULK_CREATE_CARDS } from '../api/apiReqTypes.json';
 import { toastIndicatorMessages } from './contentConfig.json';
 
 const getInitialNewRow = () => ({ question: null, answer: null, shortid: shortid.generate() });
@@ -61,12 +62,14 @@ function CardSet() {
       type: opType,
       question: opQuestion,
       answer: opAnswer,
+      list: opList,
       id: opId,
       index: opIndex,
       submit: shouldSubmitToApi,
     },
     setCardUnderOperation,
   ] = useState({});
+  const [stagedFileForUpload, setStagedFileForUpload] = useState(null);
 
   const getDispatchType = () => {
     if (opType) {
@@ -84,7 +87,12 @@ function CardSet() {
     ...getApiReqData({
       type: opType || GET_CARD_SET,
       urlParams: { id: opId || setId },
-      data: { question: opQuestion, answer: opAnswer, cardSetId: originalSet && originalSet.id },
+      data: {
+        question: opQuestion,
+        answer: opAnswer,
+        cardSetId: originalSet && originalSet.id,
+        list: opList,
+      },
     }),
     dispatch,
     dispatchType: getDispatchType(),
@@ -176,6 +184,20 @@ function CardSet() {
     ]);
   };
 
+  const createCardsFromCsv = ({ data }) => {
+    setCardUnderOperation({ type: BULK_CREATE_CARDS, list: data, submit: true });
+  };
+
+  const importCsv = () => {
+    if (stagedFileForUpload) {
+      parse(stagedFileForUpload, {
+        complete: createCardsFromCsv,
+        skipEmptyLines: true,
+        header: true,
+      });
+    }
+  };
+
   if (errorOnApiCall && !originalSet) {
     return <Error />;
   }
@@ -200,6 +222,9 @@ function CardSet() {
             originalSet={originalSet}
             actionTypes={actionTypes}
             setCardUnderOperation={setCardUnderOperation}
+            stagedFileForUpload={stagedFileForUpload}
+            setStagedFileForUpload={setStagedFileForUpload}
+            importCsv={importCsv}
             isLoading={isLoading}
           />
         );

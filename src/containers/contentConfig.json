@@ -70,6 +70,10 @@
         "success": "Successfully created card!",
         "failure": "Network error. Failed to create card."
       },
+      "BULK_CREATE_CARDS": {
+        "success": "Successfully created cards from CSV!",
+        "failure": "Network error. Failed to create cards from CSV."
+      },
       "EDIT_CARD": {
         "success": "Successfully updated card!",
         "failure": "Network error. Failed to update card."

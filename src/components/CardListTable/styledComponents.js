@@ -34,6 +34,8 @@ export const ListButton = styled(Button)`
       ? 'width: 80px; font-size: 10px;'
       : ''
   )}
+
+  display: ${((props) => (props.ishidden ? 'none' : 'initial'))}
 `;
 
 export const SideContent = styled.td`
@@ -57,6 +59,15 @@ export const ContentTableCell = styled(CommonContentTableCell)`
   & pre > code {
     white-space: pre-wrap !important;
   }
+`;
+
+export const CsvUploadContainer = styled.div`
+  margin: 8px auto;
+`;
+
+export const CsvUploadInput = styled.input`
+  width: 170px;
+  cursor: pointer;
 `;
 
 export const HeadTableCell = CommonHeadTableCell;

@@ -12,7 +12,7 @@ const CHEV_SIZE = '60px';
 const CHEV_STYLES_MIXIN = `
   font-size: ${CHEV_SIZE};
   cursor: pointer;
-  color: #060;
+  color: #2E7D32;
 `;
 
 export const StudyCard = styled(Card)`
@@ -51,7 +51,7 @@ export const ActionButton = styled(Button)`
 `;
 
 export const FlipButton = styled(Button)`
-  background-color: #060;
+  background-color: #2E7D32;
   color: #FFF;
   margin-top: 15px;
 
