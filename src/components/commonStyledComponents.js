@@ -6,6 +6,12 @@ import {
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
+import {
+  BRAND_PRIMARY,
+  BRAND_CONTRAST,
+  MEDIUM_GRAY,
+  WHITE,
+} from '../styles/constants';
 import { TABLE_POSITION_MIXIN } from '../styles/mixins';
 
 export const TableContainer = styled(MaterialUiTableContainer)`
@@ -16,15 +22,15 @@ export const TableContainer = styled(MaterialUiTableContainer)`
 `;
 
 export const Button = styled(MaterialUiButton)`
-  background-color: #2E7D32;
-  color: #FFF;
+  background-color: ${BRAND_PRIMARY};
+  color: ${WHITE};
 
   &:hover {
-    background-color: #070;
+    background-color: ${BRAND_CONTRAST};
   }
 
   &:disabled{ 
-    background-color: #F0F0F0;
+    background-color: ${MEDIUM_GRAY};
   }
 `;
 

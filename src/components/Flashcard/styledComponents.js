@@ -7,12 +7,21 @@ import { ChevronLeft, ChevronRight } from '@material-ui/icons';
 import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 
+import {
+  BRAND_PRIMARY,
+  BRAND_CONTRAST,
+  WHITE,
+  LIGHT_GRAY,
+  MEDIUM_GRAY,
+  BLACK,
+} from '../../styles/constants';
+
 const CHEV_SIZE = '60px';
 
 const CHEV_STYLES_MIXIN = `
   font-size: ${CHEV_SIZE};
   cursor: pointer;
-  color: #2E7D32;
+  color: ${BRAND_PRIMARY};
 `;
 
 export const StudyCard = styled(Card)`
@@ -32,9 +41,9 @@ export const QuestionContentContainer = styled.div`
   display: inline-table;
   width: 90%;
   min-height: 130px;
-  border: 1px solid #F0F0F0;
+  border: 1px solid ${MEDIUM_GRAY};
   padding: 20px;
-  background-color: ${(props) => (props.isShaded ? '#FBFBFB' : '#FFF')};
+  background-color: ${(props) => (props.isShaded ? LIGHT_GRAY : WHITE)};
 `;
 
 export const StyledActionsContainer = styled(CardActions)`
@@ -44,19 +53,19 @@ export const StyledActionsContainer = styled(CardActions)`
 
 export const ActionButton = styled(Button)`
   position: absolute;
-  background-color: #F0F0F0;
-  color: #000;
+  background-color: ${MEDIUM_GRAY};
+  color: ${BLACK};
   margin-top: 25px;
   ${(props) => props.side}: 50px;
 `;
 
 export const FlipButton = styled(Button)`
-  background-color: #2E7D32;
-  color: #FFF;
+  background-color: ${BRAND_PRIMARY};
+  color: ${WHITE};
   margin-top: 15px;
 
   &:hover {
-    background-color: #070;
+    background-color: ${BRAND_CONTRAST};
   }
 `;
 

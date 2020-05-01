@@ -10,7 +10,7 @@ import Error from '../components/Error/Error';
 import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { CREATE_NEW_CARD_GROUP, GET_CARD_GROUPS_BY_USER } from '../api/apiReqTypes.json';
 
-import { groups as groupsContentConfig, toastIndicatorMessages } from './contentConfig.json';
+import { groups as groupsContentConfig, toastIndicatorMessages } from '../content.json';
 
 function Main() {
   const [newGroupName, setNewGroupName] = useState(null);

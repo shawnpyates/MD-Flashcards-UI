@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { MenuTitle, StyledDrawer, StyledList } from './styledComponents';
 import { UserContext } from '../../context/userContext';
 
-import { menu as menuItems } from '../../containers/contentConfig.json';
+import { menu as menuItems } from '../../content.json';
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -16,7 +16,7 @@ import {
 
 import { UserContext } from '../../context/userContext';
 import { AUTH_URL } from '../../config';
-import { menu as menuItems } from '../../containers/contentConfig.json';
+import { menu as menuItems } from '../../content.json';
 
 import {
   ButtonContainer,

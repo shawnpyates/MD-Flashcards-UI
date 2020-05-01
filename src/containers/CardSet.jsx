@@ -26,7 +26,7 @@ import {
 
 import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { GET_CARD_SET, CREATE_NEW_CARD, BULK_CREATE_CARDS } from '../api/apiReqTypes.json';
-import { toastIndicatorMessages } from './contentConfig.json';
+import { toastIndicatorMessages } from '../content.json';
 
 const getInitialNewRow = () => ({ question: null, answer: null, shortid: shortid.generate() });
 

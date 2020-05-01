@@ -7,6 +7,12 @@ import {
 import { GitHub, Menu } from '@material-ui/icons';
 
 import { BUTTON_ICON_MIXIN } from '../../styles/mixins';
+import {
+  BRAND_PRIMARY,
+  MEDIUM_GRAY,
+  WHITE,
+  BLACK,
+} from '../../styles/constants';
 
 export const ButtonContainer = styled.div`
   position: absolute;
@@ -14,28 +20,28 @@ export const ButtonContainer = styled.div`
 `;
 
 export const StyledAppBar = styled(AppBar)`
-  background-color: #2E7D32;
+  background-color: ${BRAND_PRIMARY};
   z-index: 5000;
   position: fixed;
 `;
 
 export const StyledButton = styled(Button)`
-  background-color: #FFF;
+  background-color: ${WHITE};
   margin-left: 25px;
 
   &:hover {
-    background-color: #F0F0F0;
+    background-color: ${MEDIUM_GRAY};
   }
 
   & a {
-    color: #000;
+    color: ${BLACK};
     &:hover {
       text-decoration: none;
     }
   }
 
   @media only screen and (max-width: 800px) {
-    background-color: #2E7D32;
+    background-color: ${BRAND_PRIMARY};
     margin: 0;
     min-width: 10px;
 
@@ -51,7 +57,7 @@ export const StyledGitHubIcon = styled(GitHub)`
   ${BUTTON_ICON_MIXIN}
 
   @media only screen and (max-width: 800px) {
-    color: #FFF;
+    color: ${WHITE};
   }
 `;
 

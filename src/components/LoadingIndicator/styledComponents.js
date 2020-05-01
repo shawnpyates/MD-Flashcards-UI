@@ -1,5 +1,7 @@
 import styled, { keyframes } from 'styled-components';
+
 import { CENTER_ELEMENT_MIXIN } from '../../styles/mixins';
+import { BRAND_PRIMARY } from '../../styles/constants';
 
 const rotate = keyframes`
   from {
@@ -23,7 +25,7 @@ export const LoadingSpinner = styled.div`
   height: 4rem;
   width: 4rem;
   border-radius: 50%;
-  border: dashed 0.3rem #2E7D32;
+  border: dashed 0.3rem ${BRAND_PRIMARY};
   animation-name: ${rotate};
   animation-duration: 2s;
   animation-iteration-count: infinite;
@@ -33,7 +35,7 @@ export const LoadingSpinner = styled.div`
 `;
 
 export const LoadingText = styled.p`
-  color: #2E7D32;
+  color: ${BRAND_PRIMARY};
   font-size: 32px;
   font-family: serif;
   font-style: italic;
