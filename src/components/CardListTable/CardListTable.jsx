@@ -5,11 +5,12 @@ import {
   TableBody,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { green } from '@material-ui/core/colors';
 import ReactMarkdown from 'react-markdown';
 import PropTypes from 'prop-types';
-import { green } from '@material-ui/core/colors';
 
 import CodeBlock from '../CodeBlock';
 
@@ -20,6 +21,7 @@ import {
   SideContent,
   StyledTextarea,
   StyledDeleteIcon,
+  StyledHelpIcon,
   HeadTableCell,
   ContentTableCell,
   EmptyDataIndicator,
@@ -33,6 +35,8 @@ import {
   DELETE_CARD,
 } from '../../api/apiReqTypes.json';
 
+import { tooltips } from '../../content.json';
+
 const GreenCheckbox = withStyles({
   root: {
     color: green[800],
@@ -41,6 +45,7 @@ const GreenCheckbox = withStyles({
     },
   },
   checked: {},
+  // eslint-disable-next-line react/jsx-props-no-spreading
 })((props) => <Checkbox color="default" {...props} />);
 
 function CardListTable({
@@ -234,6 +239,9 @@ function CardListTable({
             )}
             label="I want to upload cards from a CSV."
           />
+          <Tooltip title={tooltips.csvUpload}>
+            <StyledHelpIcon />
+          </Tooltip>
           {shouldDisplayCsvOptions && getUploadButton()}
         </CsvUploadContainer>
       )}

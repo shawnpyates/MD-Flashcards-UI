@@ -8,7 +8,7 @@ import Error from '../components/Error/Error';
 import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { GET_CARD_GROUP, CREATE_NEW_CARD_SET } from '../api/apiReqTypes.json';
 
-import { sets as setsContentConfig, toastIndicatorMessages } from './contentConfig.json';
+import { sets as setsContentConfig, toastIndicatorMessages } from '../content.json';
 
 function CardGroup() {
   const { id: groupId } = useParams();

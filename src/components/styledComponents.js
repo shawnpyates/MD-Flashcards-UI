@@ -12,6 +12,7 @@ import {
   ContentTableCell as CommonContentTableCell,
   EmptyDataIndicator,
 } from './commonStyledComponents';
+import { BRAND_PRIMARY, RED } from '../styles/constants';
 
 const ListContainer = styled(TableContainer)`
   width: 80%;
@@ -45,12 +46,12 @@ const StyledTextarea = styled(TextareaAutosize)`
 
 const SuccessIndicator = styled.span`
   margin-left: 20px;
-  color: #2E7D32;
+  color: ${BRAND_PRIMARY};
   font-weight: 700;
 `;
 
 const StyledDeleteIcon = styled(DeleteForever)`
-  color: #F00;
+  color: ${RED};
   cursor: pointer;
 `;
 

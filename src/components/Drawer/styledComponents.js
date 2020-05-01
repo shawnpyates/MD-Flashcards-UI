@@ -1,8 +1,10 @@
 import { Drawer, List } from '@material-ui/core';
 import styled from 'styled-components';
 
+import { BLACK } from '../../styles/constants';
+
 export const StyledDrawer = styled(Drawer)`
-  color: #000;
+  color: ${BLACK};
 
   @media only screen and (max-width: 1040px) {
     visibility: collapse;

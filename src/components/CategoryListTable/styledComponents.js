@@ -14,6 +14,7 @@ import {
   StyledRowLink as CommonStyledRowLink,
 } from '../commonStyledComponents';
 
+import { BLACK } from '../../styles/constants';
 import { CENTER_ELEMENT_MIXIN } from '../../styles/mixins';
 
 export const StyledTable = styled(Table)`
@@ -49,7 +50,7 @@ export const StyledTextField = styled(TextField)`
 export const LoadingIndicator = styled.div`
   position: absolute;
   padding: 10px;
-  border: 1px solid #000;
+  border: 1px solid ${BLACK};
   border-radius: 5px;
 
   ${(props) => (props.margintop ? 'margin-top: 100px;' : '')}
