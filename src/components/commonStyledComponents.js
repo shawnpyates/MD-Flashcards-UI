@@ -16,7 +16,7 @@ export const TableContainer = styled(MaterialUiTableContainer)`
 `;
 
 export const Button = styled(MaterialUiButton)`
-  background-color: #060;
+  background-color: #2E7D32;
   color: #FFF;
 
   &:hover {

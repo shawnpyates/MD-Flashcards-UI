@@ -91,6 +91,12 @@ export const getApiReqData = ({ type, urlParams, data }) => {
           card: { question: data.question, answer: data.answer, card_set_id: data.cardSetId },
         },
       });
+    case apiReqTypes.BULK_CREATE_CARDS:
+      return ({
+        endpoint: `/card_sets/${urlParams.id}/cards`,
+        method: 'POST',
+        body: { cards: data.list },
+      });
     case apiReqTypes.EDIT_CARD:
       return ({
         endpoint: `/cards/${urlParams.id}`,

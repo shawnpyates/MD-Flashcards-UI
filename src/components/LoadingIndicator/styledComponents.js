@@ -23,7 +23,7 @@ export const LoadingSpinner = styled.div`
   height: 4rem;
   width: 4rem;
   border-radius: 50%;
-  border: dashed 0.3rem #060;
+  border: dashed 0.3rem #2E7D32;
   animation-name: ${rotate};
   animation-duration: 2s;
   animation-iteration-count: infinite;
@@ -33,7 +33,7 @@ export const LoadingSpinner = styled.div`
 `;
 
 export const LoadingText = styled.p`
-  color: #060;
+  color: #2E7D32;
   font-size: 32px;
   font-family: serif;
   font-style: italic;
