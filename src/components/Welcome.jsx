@@ -3,7 +3,8 @@ import Container from '@material-ui/core/Container';
 import styled from 'styled-components';
 
 import { TABLE_POSITION_MIXIN } from '../styles/mixins';
-import { welcome as content } from '../containers/contentConfig.json';
+import { BRAND_PRIMARY, LIGHT_GRAY, MEDIUM_GRAY } from '../styles/constants';
+import { welcome as content } from '../content.json';
 
 const {
   title,
@@ -15,10 +16,10 @@ const {
 const WelcomeContainer = styled(Container)`
   width: 70%;
   text-align: center;
-  border: 1px solid #F0F0F0;
+  border: 1px solid ${MEDIUM_GRAY};
   padding: 30px;
-  color: #2E7D32;
-  background-color: #FBFBFB;
+  color: ${BRAND_PRIMARY};
+  background-color: ${LIGHT_GRAY};
 
   ${TABLE_POSITION_MIXIN}
 `;
@@ -26,7 +27,7 @@ const WelcomeContainer = styled(Container)`
 const StyledImage = styled.img`
   height: 50%;
   width: 50%;
-  border 2px solid #F0F0F0;
+  border 2px solid ${MEDIUM_GRAY};
   margin: 10px auto;
 `;
 

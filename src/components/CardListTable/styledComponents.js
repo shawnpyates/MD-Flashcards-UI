@@ -3,7 +3,7 @@ import {
   TextareaAutosize,
 } from '@material-ui/core';
 import styled from 'styled-components';
-import { DeleteForever } from '@material-ui/icons';
+import { DeleteForever, Help } from '@material-ui/icons';
 
 import {
   TableContainer,
@@ -12,6 +12,7 @@ import {
   ContentTableCell as CommonContentTableCell,
   EmptyDataIndicator as CommonEmptyDataIndicator,
 } from '../commonStyledComponents';
+import { BRAND_PRIMARY, RED } from '../../styles/constants';
 
 export const ListContainer = styled(TableContainer)`
   width: 80%;
@@ -48,8 +49,14 @@ export const StyledTextarea = styled(TextareaAutosize)`
 `;
 
 export const StyledDeleteIcon = styled(DeleteForever)`
-  color: #F00;
+  color: ${RED};
   cursor: pointer;
+`;
+
+export const StyledHelpIcon = styled(Help)`
+  color: ${BRAND_PRIMARY};
+  cursor: pointer;
+  vertical-align: middle;
 `;
 
 export const ContentTableCell = styled(CommonContentTableCell)`
@@ -62,7 +69,7 @@ export const ContentTableCell = styled(CommonContentTableCell)`
 `;
 
 export const CsvUploadContainer = styled.div`
-  margin: 8px auto;
+  margin: 12px auto;
 `;
 
 export const CsvUploadInput = styled.input`

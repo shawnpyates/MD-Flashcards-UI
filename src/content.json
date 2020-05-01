@@ -108,5 +108,8 @@
       "link": "/",
       "requiresCurrentUser": true
     }
-  ]
+  ],
+  "tooltips": {
+    "csvUpload": "You can create flashcards by uploading your own CSV (comma-separated values) file that contains a question and answer in each row. Ensure that the header row is written as: question,answer"
+  }
 }

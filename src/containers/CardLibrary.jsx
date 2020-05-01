@@ -6,7 +6,7 @@ import Error from '../components/Error/Error';
 
 import { getApiReqData, useApiCall } from '../api/apiRequest';
 import { GET_CARD_LIBRARY } from '../api/apiReqTypes.json';
-import { library as libraryContentConfig } from './contentConfig.json';
+import { library as libraryContentConfig } from '../content.json';
 
 function CardLibrary() {
   const [selectedCardSetId, setSelectedCardSetId] = useState(null);
