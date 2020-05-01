@@ -15,7 +15,7 @@ export const ButtonContainer = styled.div`
 `;
 
 export const StyledAppBar = styled(AppBar)`
-  background-color: #060;
+  background-color: #2E7D32;
   z-index: 5000;
   position: fixed;
 `;
@@ -36,7 +36,7 @@ export const StyledButton = styled(Button)`
   }
 
   @media only screen and (max-width: 800px) {
-    background-color: #060;
+    background-color: #2E7D32;
     margin: 0;
     min-width: 10px;
 
@@ -77,6 +77,7 @@ export const StyledMenuIcon = styled(Menu)`
 
 export const ResponsiveP = styled.p`
   display: inline;
+  text-transform: none;
 
   @media only screen and (max-width: 800px) {
     display: none;

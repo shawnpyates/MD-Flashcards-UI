@@ -17,7 +17,7 @@ const AboutContainer = styled(Container)`
   text-align: center;
   border: 1px solid #F0F0F0;
   padding: 30px;
-  color: #060;
+  color: #2E7D32;
   background-color: #FBFBFB;
 
   ${TABLE_POSITION_MIXIN}
